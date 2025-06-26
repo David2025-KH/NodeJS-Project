@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Air Quality Data</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
+      margin: 20px;
       background: #fff;
       color: #333;
       padding: 20px;
@@ -18,22 +18,32 @@
       text-align: center;
       color: #2c3e50;
       margin-bottom: 5px;
+      font-size: 1.8rem;
     }
     #timestamp {
       text-align: center;
       font-style: italic;
       color: #666;
       margin-bottom: 20px;
+      font-size: 1rem;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 10px;
+      min-width: 350px;
     }
     th, td {
-      padding: 10px;
+      padding: 10px 8px;
       border-bottom: 1px solid #ddd;
       text-align: left;
+      font-size: 1rem;
+      white-space: nowrap;
+      vertical-align: middle;
     }
     th {
       background-color: #f7f7f7;
@@ -44,6 +54,23 @@
       font-style: italic;
       text-align: center;
       margin-top: 10px;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 400px) {
+      body {
+        padding: 10px;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      th, td {
+        font-size: 0.9rem;
+        padding: 8px 5px;
+      }
+      #timestamp, #error-msg {
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
@@ -51,21 +78,44 @@
   <h1>Real-time Air Quality Data</h1>
   <div id="timestamp">Loading timestamp...</div>
 
-  <table id="data-table">
-    <thead>
-      <tr>
-        <th>Parameter</th>
-        <th>Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td colspan="2" style="text-align:center;">Loading...</td></tr>
-    </tbody>
-  </table>
+  <div class="table-wrapper">
+    <table id="data-table">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Value</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="3" style="text-align:center;">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
   <div id="error-msg"></div>
 
   <script>
+    // Symbols as emojis — you can replace with any symbols or small icons
+    const parameterSymbols = {
+      CO2: "🌫️",
+      Oxygen: "🫁",
+      PM10_Standard: "🌬️",
+      PM10_env: "🌬️",
+      PM1_0_Standard: "🌪️",
+      PM1_0_env: "🌪️",
+      PM2_5_Standard: "🌫️",
+      PM2_5_env: "🌫️",
+      Particles_0_3um: "⚛️",
+      Particles_0_5um: "⚛️",
+      Particles_10um: "⚛️",
+      Particles_1_0um: "⚛️",
+      Particles_2_5um: "⚛️",
+      Particles_5_0um: "⚛️",
+      Pressure: "🔵",
+      VOC: "🧪"
+    };
+
     const parameterNames = {
       CO2: "CO₂",
       Oxygen: "Oxygen",
@@ -104,6 +154,33 @@
       VOC: "index"
     };
 
+    // Add comments for values (you can customize logic here)
+    function getComment(key, value) {
+      switch(key) {
+        case "CO2":
+          if (value < 400) return "Fresh air";
+          if (value < 1000) return "Normal indoor";
+          if (value < 2000) return "Poor air quality";
+          return "Unhealthy!";
+        case "Oxygen":
+          if (value > 20.5) return "Good";
+          if (value > 19) return "Acceptable";
+          return "Low oxygen!";
+        case "PM2_5_Standard":
+          if (value <= 12) return "Good";
+          if (value <= 35) return "Moderate";
+          if (value <= 55) return "Unhealthy for sensitive groups";
+          if (value <= 150) return "Unhealthy";
+          return "Very unhealthy";
+        case "VOC":
+          if (value < 50) return "Low VOC";
+          if (value < 150) return "Moderate VOC";
+          return "High VOC";
+        default:
+          return "";
+      }
+    }
+
     function formatTimestamp(ts) {
       if (!ts) return "No timestamp available";
       const date = new Date(ts);
@@ -128,24 +205,26 @@
         // Show formatted timestamp below header
         timestampDiv.textContent = "Last Update: " + formatTimestamp(data.Timestamp);
 
-        // Build table rows excluding timestamp key
         for (const [key, value] of Object.entries(data)) {
-          if (key === "Timestamp") continue;  // skip timestamp in table
+          if (key === "Timestamp") continue;
 
+          const symbol = parameterSymbols[key] ? parameterSymbols[key] + " " : "";
           const paramName = parameterNames[key] || key;
           const unit = units[key] ? ` ${units[key]}` : "";
           const displayValue = value + unit;
+          const comment = getComment(key, value);
 
           tableBody.insertAdjacentHTML('beforeend', `
             <tr>
-              <td>${paramName}</td>
+              <td>${symbol}${paramName}</td>
               <td>${displayValue}</td>
+              <td>${comment}</td>
             </tr>
           `);
         }
 
       } catch (error) {
-        tableBody.innerHTML = `<tr><td colspan="2" style="text-align:center; font-style: italic;">Error loading data</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; font-style: italic;">Error loading data</td></tr>`;
         errorDiv.textContent = error.message;
         timestampDiv.textContent = "";
         console.error('Error fetching data:', error);
