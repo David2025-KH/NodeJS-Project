@@ -29,7 +29,6 @@
     }
     .table-wrapper {
       overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
     }
     table {
       width: 100%;
@@ -56,21 +55,11 @@
       margin-top: 10px;
       font-size: 1rem;
     }
-
     @media (max-width: 400px) {
-      body {
-        padding: 10px;
-      }
-      h1 {
-        font-size: 1.4rem;
-      }
-      th, td {
-        font-size: 0.9rem;
-        padding: 8px 5px;
-      }
-      #timestamp, #error-msg {
-        font-size: 0.9rem;
-      }
+      body { padding: 10px; }
+      h1 { font-size: 1.4rem; }
+      th, td { font-size: 0.9rem; padding: 8px 5px; }
+      #timestamp, #error-msg { font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -96,24 +85,25 @@
   <div id="error-msg"></div>
 
   <script>
-    // Symbols as emojis — you can replace with any symbols or small icons
     const parameterSymbols = {
-      CO2: "🌫️",
+      CO2: "🫧️️",
       Oxygen: "🫁",
-      PM10_Standard: "🌬️",
-      PM10_env: "🌬️",
-      PM1_0_Standard: "🌪️",
-      PM1_0_env: "🌪️",
-      PM2_5_Standard: "🌫️",
-      PM2_5_env: "🌫️",
-      Particles_0_3um: "⚛️",
-      Particles_0_5um: "⚛️",
-      Particles_10um: "⚛️",
-      Particles_1_0um: "⚛️",
-      Particles_2_5um: "⚛️",
-      Particles_5_0um: "⚛️",
-      Pressure: "🔵",
-      VOC: "🧪"
+      PM10_Standard: "🧪",
+      PM10_env: "🌍",
+      PM1_0_Standard: "🧪️",
+      PM1_0_env: "🌍️",
+      PM2_5_Standard: "🧪️",
+      PM2_5_env: "🌍️",
+      Particles_0_3um: "🔬️",
+      Particles_0_5um: "🔬",
+      Particles_10um: "🔬",
+      Particles_1_0um: "🔬",
+      Particles_2_5um: "🔬",
+      Particles_5_0um: "🔬",
+      Pressure: "💨",
+      VOC: "🧪",
+      Temperature: "🌡️",
+      Humidity: "💧"
     };
 
     const parameterNames = {
@@ -132,7 +122,9 @@
       Particles_2_5um: "Particles 2.5μm",
       Particles_5_0um: "Particles 5.0μm",
       Pressure: "Pressure",
-      VOC: "VOC"
+      VOC: "VOC",
+      Temperature: "Temperature",
+      Humidity: "Humidity"
     };
 
     const units = {
@@ -151,34 +143,57 @@
       Particles_2_5um: "count",
       Particles_5_0um: "count",
       Pressure: "Pa",
-      VOC: "index"
+      VOC: "index",
+      Temperature: "°C",
+      Humidity: "%RH"
     };
 
-    // Add comments for values (you can customize logic here)
-    function getComment(key, value) {
-      switch(key) {
+    function getCommentAndColor(key, value) {
+      switch (key) {
         case "CO2":
-          if (value < 400) return "Fresh air";
-          if (value < 1000) return "Normal indoor";
-          if (value < 2000) return "Poor air quality";
-          return "Unhealthy!";
+          if (value >= -1 && value < 401) return { comment: "Fresh air", color: "#0000FF" };         // Blue
+          if (value >= 399 && value < 1001) return { comment: "Normal indoor", color: "#008000" };  // Green
+          if (value >= 999 && value < 2501) return { comment: "Poor air quality", color: "#FFA500" }; // Orange
+          if (value >= 2501) return { comment: "Unhealthy!", color: "#FF0000" };                    // Red
+          break;
         case "Oxygen":
-          if (value > 20.5) return "Good";
-          if (value > 19) return "Acceptable";
-          return "Low oxygen!";
+          if (value > 20.5) return { comment: "Good", color: "#0000FF" };
+          if (value > 19 && value <= 20.5) return { comment: "Acceptable", color: "#008000" };
+          if (value > 18 && value <= 19) return { comment: "Low oxygen!", color: "#FFA500" };
+          if (value >= 0 && value <= 18) return { comment: "Very low oxygen!", color: "#FF0000" };
+          break;
         case "PM2_5_Standard":
-          if (value <= 12) return "Good";
-          if (value <= 35) return "Moderate";
-          if (value <= 55) return "Unhealthy for sensitive groups";
-          if (value <= 150) return "Unhealthy";
-          return "Very unhealthy";
+        case "PM1_0_env":
+          if (value >= -1 && value <= 26) return { comment: "Exellent 🥰", color: "#0000FF" };
+          if (value > 25 && value <= 51) return { comment: "Good 😊", color: "#008000" };
+          if (value > 50 && value <= 101) return { comment: "Moderate 😐", color: "#FFA500" };
+          if (value > 100 && value <= 151) return { comment: "Unhealthy 😷", color: "#FF0000" };
+          if (value > 150 && value <= 251) return { comment: "Unhealthy 😷", color: "#FF0000" };
+		  if (value > 249) return { comment: "Very unhealthy 😷", color: "#800080" };
+          break;
+        case "PM2_5_env":
+          if (value >= -1 && value <= 26) return { comment: "Exellent 🥰", color: "#0000FF" };
+          if (value > 25 && value <= 51) return { comment: "Good 😊", color: "#008000" };
+          if (value > 50 && value <= 101) return { comment: "Moderate 😐", color: "#FFA500" };
+          if (value > 100 && value <= 151) return { comment: "Unhealthy 😷", color: "#FF0000" };
+          if (value > 150 && value <= 251) return { comment: "Unhealthy 😷", color: "#FF0000" };
+		  if (value > 249) return { comment: "Very unhealthy 😷", color: "#800080" };
+          break;
+	   case "PM10_env":
+          if (value >= -1 && value <= 26) return { comment: "Exellent 🥰", color: "#0000FF" };
+          if (value > 25 && value <= 51) return { comment: "Good 😊", color: "#008000" };
+          if (value > 50 && value <= 101) return { comment: "Moderate 😐", color: "#FFA500" };
+          if (value > 100 && value <= 151) return { comment: "Unhealthy 😷", color: "#FF0000" };
+          if (value > 150 && value <= 251) return { comment: "Unhealthy 😷", color: "#FF0000" };
+		  if (value > 249) return { comment: "Very unhealthy 😷", color: "#800080" };
+          break;
         case "VOC":
-          if (value < 50) return "Low VOC";
-          if (value < 150) return "Moderate VOC";
-          return "High VOC";
-        default:
-          return "";
+          if (value >= 0 && value < 50) return { comment: "Low VOC", color: "#0000FF" };
+          if (value >= 50 && value < 150) return { comment: "Moderate VOC", color: "#008000" };
+          if (value >= 150) return { comment: "High VOC", color: "#FF0000" };
+          break;
       }
+      return { comment: "", color: "#000000" }; // Default black
     }
 
     function formatTimestamp(ts) {
@@ -198,26 +213,28 @@
         if (!response.ok) throw new Error('Network response was not OK');
 
         const data = await response.json();
-
         errorDiv.textContent = '';
         tableBody.innerHTML = '';
-
-        // Show formatted timestamp below header
         timestampDiv.textContent = "Last Update: " + formatTimestamp(data.Timestamp);
 
         for (const [key, value] of Object.entries(data)) {
           if (key === "Timestamp") continue;
 
-          const symbol = parameterSymbols[key] ? parameterSymbols[key] + " " : "";
           const paramName = parameterNames[key] || key;
+          const symbol = parameterSymbols[key] ? ` ${parameterSymbols[key]}` : "";
           const unit = units[key] ? ` ${units[key]}` : "";
-          const displayValue = value + unit;
-          const comment = getComment(key, value);
+
+          let displayValue = value;
+          if (key === "Oxygen" || key === "Humidity" || key === "Temperature") {
+            displayValue = Number(value).toFixed(2);
+          }
+
+          const { comment, color: textColor } = getCommentAndColor(key, value);
 
           tableBody.insertAdjacentHTML('beforeend', `
             <tr>
-              <td>${symbol}${paramName}</td>
-              <td>${displayValue}</td>
+              <td>${paramName}${symbol}</td>
+              <td style="color:${textColor};">${displayValue}${unit}</td>
               <td>${comment}</td>
             </tr>
           `);
@@ -232,7 +249,7 @@
     }
 
     fetchData();
-    setInterval(fetchData, 5000);  // Update every 5 seconds
+    setInterval(fetchData, 5000);
   </script>
 </body>
 </html>
