@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Historical Indoor Air Quality Data</title>
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css"/>
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 12px;
+      background: #fff;
+      color: #2c3e50;
+      font-size: 11px;
+    }
+    h1, h2 {
+      text-align: center;
+      font-size: 16px;
+      margin: 6px 0;
+    }
+    .section { margin-top: 8px; }
+    button {
+      display: block;
+      margin: 6px auto;
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      transition: background-color 0.3s ease, transform 0.15s ease;
+    }
+    button:hover { background-color: #2980b9; transform: scale(1.03); }
+    #airQuality_wrapper {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 75vh;
+      border: 1px solid #ccd7e0;
+      border-radius: 6px;
+      box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.1);
+      background: #f9fbfd;
+    }
+    table.dataTable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      min-width: 900px;
+    }
+    table.dataTable thead {
+      background-color: #c4d7f2;
+      color: #2c3e50;
+      font-weight: 700;
+      user-select: none;
+    }
+    table.dataTable thead th {
+      position: sticky;
+      top: 0;
+      background-color: #c4d7f2;
+      padding: 6px 8px;
+      border: 1px solid #d4dce6;
+      text-align: center !important;
+      white-space: normal;
+      z-index: 10;
+      font-size: 11px;
+      vertical-align: middle;
+    }
+    table.dataTable tbody td {
+      padding: 5px 6px;
+      border: 1px solid #d4dce6;
+      text-align: center !important;
+      white-space: nowrap;
+      font-size: 11px;
+      vertical-align: middle;
+    }
+    table.dataTable tbody tr:nth-child(even) {
+      background-color: #f5f8fc;
+    }
+    table.dataTable tbody tr:hover {
+      background-color: #dce9fb;
+      transition: background-color 0.3s ease;
+    }
+    .dataTables_filter input {
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      padding: 4px 8px;
+      margin-left: 5px;
+      width: 180px;
+      font-size: 11px;
+    }
+    .dataTables_filter input:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 4px #a3c9ff;
+    }
+    @media (max-width: 768px) {
+      table.dataTable {
+        min-width: 900px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Historical Indoor Air Quality Data</h1>
+
+  <div class="section">
+    <button onclick="window.location.href='index.html'">⬅️ Back to Live Dashboard</button>
+  </div>
+
+  <div class="section">
+    <h2>Historical Data 📈</h2>
+    <div id="airQuality_wrapper">
+      <table id="airQuality" class="display">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Sensor Read</th>
+            <th>PM1.0<br>(µg/m³)</th>
+            <th>PM2.5<br>(µg/m³)</th>
+            <th>PM10<br>(µg/m³)</th>
+            <th>O₂<br>(%)</th>
+            <th>CO₂<br>(ppm)</th>
+            <th>Temperature<br>(°C)</th>
+            <th>Humidity<br>(%)</th>
+            <th>Pressure<br>(Pa)</th>
+            <th>VOC<br>Index</th>
+            <th>AIQ<br>PM2.5</th>
+            <th>AIQ<br>PM10</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+  <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+
+  <script>
+    const table = new DataTable('#airQuality', {
+      responsive: true,
+      ajax: {
+        url: 'https://script.google.com/macros/s/AKfycbyZcQO_IDz4NxeM_52HnR1n7TuwMa5-NprGUuwu0bqkez8mUbyL9dARt2z7P5wLS2h7/exec',
+        dataSrc: json => json.data || json
+      },
+      columns: [
+        { data: row => moment.utc(row['Date']).isValid() ? moment.utc(row['Date']).local().format('YYYY-MM-DD') : (row['Date'] || '-') },
+        { data: row => moment.utc(row['Time']).isValid() ? moment.utc(row['Time']).local().format('HH:mm:ss') : (row['Time'] || '-') },
+        { data: row => row['Sensor Read'] || '-' },
+        { data: row => row['Environment PM1.0 (µg/m³)'] ?? '-' },
+        { data: row => row['Environment PM2.5 (µg/m³)'] ?? '-' },
+        { data: row => row['Environment PM10 (µg/m³)'] ?? '-' },
+        { data: row => row['O₂ (%)'] ?? '-' },
+        { data: row => row['CO₂ (ppm)'] ?? '-' },
+        { data: row => row['Temperature (°C)'] ?? '-' },
+        { data: row => row['Humidity (%)'] ?? '-' },
+        { data: row => row['Air Pressure (Pa)'] ?? '-' },
+        { data: row => row['VOC Index'] ?? '-' },
+        { data: row => row['AIQ PM2.5'] ?? '-' },
+        { data: row => row['AIQ PM10'] ?? '-' }
+      ],
+      order: [[0, 'desc'], [1, 'desc']],
+      dom: 'Brtip',
+      buttons: [
+        {
+          extend: 'pdfHtml5',
+          orientation: 'landscape',
+          pageSize: 'A3',
+          exportOptions: { columns: ':visible' },
+          customize: function (doc) {
+            doc.defaultStyle.fontSize = 7;
+            doc.styles.tableHeader.fontSize = 8;
+            doc.pageMargins = [60, 20, 60, 20];
+
+            doc.content[1].table.widths = [
+              90, 70, 70, 60, 60, 60,
+              50, 70, 70, 60, 90, 60, 50, 50
+            ];
+
+            doc.content[1].layout = {
+              hLineWidth: () => 0.5,
+              vLineWidth: () => 0.5,
+              hLineColor: () => '#ccc',
+              vLineColor: () => '#ccc',
+              paddingLeft: () => 6,
+              paddingRight: () => 6,
+              fillColor: (rowIndex) => (rowIndex % 2 === 0) ? null : '#f5f8fc',
+            };
+
+            const headerMap = {
+              'PM1.0<br>(µg/m³)': ['PM1.0', '(µg/m³)'],
+              'PM2.5<br>(µg/m³)': ['PM2.5', '(µg/m³)'],
+              'PM10<br>(µg/m³)': ['PM10', '(µg/m³)'],
+              'O₂<br>(%)': ['O₂', '(%)'],
+              'CO₂<br>(ppm)': ['CO₂', '(ppm)'],
+              'Temperature<br>(°C)': ['Temperature', '(°C)'],
+              'Humidity<br>(%)': ['Humidity', '(%)'],
+              'Pressure<br>(Pa)': ['Pressure', '(Pa)'],
+              'VOC<br>Index': ['VOC', 'Index'],
+              'AIQ<br>PM2.5': ['AIQ PM2.5', ''],
+              'AIQ<br>PM10': ['AIQ PM10', '']
+            };
+
+            const body = doc.content[1].table.body;
+
+            // Format header row to show two lines in one cell
+            body[0] = body[0].map(cell => {
+              if (typeof cell === 'string' && headerMap[cell]) {
+                return {
+                  text: headerMap[cell],
+                  alignment: 'center',
+                  margin: [0, 5, 0, 5]
+                };
+              } else if (typeof cell === 'string') {
+                return {
+                  text: [cell, ''],
+                  alignment: 'center',
+                  margin: [0, 5, 0, 5]
+                };
+              }
+              return cell;
+            });
+
+            // Center align all data cells
+            for (let i = 1; i < body.length; i++) {
+              for (let j = 0; j < body[i].length; j++) {
+                const val = body[i][j];
+                if (typeof val === 'object') {
+                  body[i][j].alignment = 'center';
+                } else {
+                  body[i][j] = {
+                    text: val,
+                    alignment: 'center'
+                  };
+                }
+              }
+            }
+          }
+        },
+        'colvis'
+      ]
+    });
+
+    setInterval(() => table.ajax.reload(null, false), 5000);
+  </script>
+</body>
+</html>

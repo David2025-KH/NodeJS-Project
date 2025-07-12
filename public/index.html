@@ -20,6 +20,22 @@
       margin-bottom: 5px;
       font-size: 1.8rem;
     }
+    button {
+      display: block;
+      margin: 10px auto 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
     #timestamp {
       text-align: center;
       font-style: italic;
@@ -65,6 +81,7 @@
 </head>
 <body>
   <h1>Real-time Air Quality Data</h1>
+  <button onclick="location.href='historical.html'">📈 View Historical Data</button>
   <div id="timestamp">Loading timestamp...</div>
 
   <div class="table-wrapper">
@@ -99,10 +116,10 @@
 
     const parameterNames = {
       CO2: "CO₂",
-      Oxygen: "Oxygen",
-      PM10_env: "PM10 (Env)",
-      PM1_0_env: "PM1 (Env)",
-      PM2_5_env: "PM2.5 (Env)",
+      Oxygen: "O₂",
+      PM10_env: "PM10",
+      PM1_0_env: "PM1",
+      PM2_5_env: "PM2.5",
       Pressure: "Pressure",
       VOC: "VOC",
       Temperature: "Temperature",
@@ -123,32 +140,67 @@
 
     function getCommentAndColor(key, value) {
       switch (key) {
+        case "Temperature":
+          if (value < 18)                   return { comment: "Too cold ❄️", color: "#0000FF" };
+          if (value >= 18 && value <= 24)  return { comment: "Comfortable 😊", color: "#008000" };
+          if (value > 24 && value <= 30)   return { comment: "Warm ☀️", color: "#B8860B" };
+          if (value > 30)                  return { comment: "Too hot 🔥", color: "#FF0000" };
+          break;
+        case "Humidity":
+          if (value < 30)                  return { comment: "Too dry 😰", color: "#B8860B" };
+          if (value >= 30 && value <= 60) return { comment: "Comfortable 😊", color: "#008000" };
+          if (value > 60)                 return { comment: "Too humid 🥵", color: "#FF0000" };
+          break;
+        case "Pressure":
+          if (value < 98000) return { comment: "Low pressure - stormy? ⛈️", color: "#0000FF" };
+          if (value >= 98000 && value <= 103000) return { comment: "Normal pressure 🌤️", color: "#008000" };
+          if (value > 103000) return { comment: "High pressure - fair weather ☀️", color: "#B8860B" };
+          break;
         case "CO2":
-          if (value >= -1 && value < 401) return { comment: "Fresh air", color: "#0000FF" };
-          if (value >= 399 && value < 1001) return { comment: "Normal indoor", color: "#008000" };
-          if (value >= 999 && value < 2501) return { comment: "Poor air quality", color: "#FFA500" };
-          if (value >= 2501) return { comment: "Unhealthy!", color: "#FF0000" };
+          if (value >= 0 && value <= 600)    return { comment: "Fresh air 🌿", color: "#0000FF" };
+          if (value > 600 && value <= 1000)  return { comment: "Normal indoor 🏠", color: "#008000" };
+          if (value > 1000 && value <= 2000) return { comment: "Moderate CO₂ 😐", color: "#B8860B" };
+          if (value > 2000 && value <= 5000) return { comment: "Poor air quality 😷", color: "#B8860B" };
+          if (value > 5000)                  return { comment: "Unhealthy! ☠️", color: "#FF0000" };
           break;
         case "Oxygen":
-          if (value > 20.5) return { comment: "Good", color: "#0000FF" };
-          if (value > 19 && value <= 20.5) return { comment: "Acceptable", color: "#008000" };
-          if (value > 18 && value <= 19) return { comment: "Low oxygen!", color: "#FFA500" };
-          if (value >= 0 && value <= 18) return { comment: "Very low oxygen!", color: "#FF0000" };
+          if (value > 20.8 && value <= 23.5) return { comment: "Good 😊", color: "#0000FF" };
+          if (value > 19.5 && value <= 20.8) return { comment: "Acceptable 🙂", color: "#008000" };
+          if (value > 18.0 && value <= 19.5) return { comment: "Low oxygen! ⚠️", color: "#B8860B" };
+          if (value >= 0 && value <= 18.0)   return { comment: "Very low oxygen! ☠️", color: "#FF0000" };
+          break;
+        case "PM1_0_env":
+          if (value >= 0 && value <= 20)    return { comment: "Excellent 🥰", color: "#0000FF" };
+          if (value > 20 && value <= 40)    return { comment: "Good 😊", color: "#00B050" };
+          if (value > 40 && value <= 80)    return { comment: "Moderate 😐", color: "#B8860B" };
+          if (value > 80 && value <= 120)   return { comment: "Unhealthy 😷", color: "#FF0000" };
+          if (value > 120 && value <= 200)  return { comment: "Very Unhealthy 🥵", color: "#800080" };
+          if (value > 200)                  return { comment: "Hazardous ☠️", color: "#7E0023" };
           break;
         case "PM2_5_env":
-        case "PM1_0_env":
+          if (value >= 0 && value <= 25)   return { comment: "Excellent 🥰", color: "#0000FF" };
+          if (value > 25 && value <= 50)   return { comment: "Good 😊", color: "#00B050" };
+          if (value > 50 && value <= 100)  return { comment: "Moderate 😐", color: "#B8860B" };
+          if (value > 100 && value <= 150) return { comment: "Unhealthy 😷", color: "#FF0000" };
+          if (value > 150 && value <= 250) return { comment: "Very Unhealthy 🥵", color: "#800080" };
+          if (value > 250)                 return { comment: "Hazardous ☠️", color: "#7E0023" };
+          break;
         case "PM10_env":
-          if (value >= -1 && value <= 26) return { comment: "Exellent 🥰", color: "#0000FF" };
-          if (value > 25 && value <= 51) return { comment: "Good 😊", color: "#008000" };
-          if (value > 50 && value <= 101) return { comment: "Moderate 😐", color: "#FFA500" };
-          if (value > 100 && value <= 151) return { comment: "Unhealthy 😷", color: "#FF0000" };
-          if (value > 150 && value <= 251) return { comment: "Unhealthy 😷", color: "#FF0000" };
-          if (value > 249) return { comment: "Very unhealthy 😷", color: "#800080" };
+          if (value >= 0 && value <= 50)    return { comment: "Excellent 🥰", color: "#0000FF" };
+          if (value > 50 && value <= 100)   return { comment: "Good 😊", color: "#00B050" };
+          if (value > 100 && value <= 200)  return { comment: "Moderate 😐", color: "#B8860B" };
+          if (value > 200 && value <= 300)  return { comment: "Unhealthy 😷", color: "#FF0000" };
+          if (value > 300 && value <= 400)  return { comment: "Very Unhealthy 🥵", color: "#800080" };
+          if (value > 400)                  return { comment: "Hazardous ☠️", color: "#7E0023" };
           break;
         case "VOC":
-          if (value >= 0 && value < 50) return { comment: "Low VOC", color: "#0000FF" };
-          if (value >= 50 && value < 150) return { comment: "Moderate VOC", color: "#008000" };
-          if (value >= 150) return { comment: "High VOC", color: "#FF0000" };
+          if (value >= 0 && value <= 50)   return { comment: "Excellent 🥰", color: "#0000FF" };
+          if (value > 50 && value <= 100)  return { comment: "Good 😊", color: "#00B050" };
+          if (value > 100 && value <= 150) return { comment: "Moderate 😐", color: "#B8860B" };
+          if (value > 150 && value <= 200) return { comment: "Unhealthy for Sensitive 😷", color: "#B8860B" };
+          if (value > 200 && value <= 300) return { comment: "Unhealthy 😵", color: "#FF0000" };
+          if (value > 300 && value <= 400) return { comment: "Very Unhealthy 🥵", color: "#800080" };
+          if (value > 400 && value <= 500) return { comment: "Hazardous ☠️", color: "#7E0023" };
           break;
       }
       return { comment: "", color: "#000000" };
@@ -176,15 +228,9 @@
         timestampDiv.textContent = "Last Update: " + formatTimestamp(data.Timestamp);
 
         const displayOrder = [
-          "PM1_0_env",
-          "PM2_5_env",
-          "PM10_env",
-          "Oxygen",
-          "CO2",
-          "Temperature",
-          "Humidity",
-          "Pressure",
-          "VOC"
+          "PM1_0_env", "PM2_5_env", "PM10_env",
+          "Oxygen", "CO2", "Temperature", "Humidity",
+          "Pressure", "VOC"
         ];
 
         for (const key of displayOrder) {
