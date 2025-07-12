@@ -88,18 +88,9 @@
     const parameterSymbols = {
       CO2: "🫧️️",
       Oxygen: "🫁",
-      PM10_Standard: "🧪",
       PM10_env: "🌍",
-      PM1_0_Standard: "🧪️",
       PM1_0_env: "🌍️",
-      PM2_5_Standard: "🧪️",
       PM2_5_env: "🌍️",
-      Particles_0_3um: "🔬️",
-      Particles_0_5um: "🔬",
-      Particles_10um: "🔬",
-      Particles_1_0um: "🔬",
-      Particles_2_5um: "🔬",
-      Particles_5_0um: "🔬",
       Pressure: "💨",
       VOC: "🧪",
       Temperature: "🌡️",
@@ -109,18 +100,9 @@
     const parameterNames = {
       CO2: "CO₂",
       Oxygen: "Oxygen",
-      PM10_Standard: "PM10 (Standard)",
       PM10_env: "PM10 (Env)",
-      PM1_0_Standard: "PM1.0 (Standard)",
-      PM1_0_env: "PM1.0 (Env)",
-      PM2_5_Standard: "PM2.5 (Standard)",
+      PM1_0_env: "PM1 (Env)",
       PM2_5_env: "PM2.5 (Env)",
-      Particles_0_3um: "Particles 0.3μm",
-      Particles_0_5um: "Particles 0.5μm",
-      Particles_10um: "Particles 10μm",
-      Particles_1_0um: "Particles 1.0μm",
-      Particles_2_5um: "Particles 2.5μm",
-      Particles_5_0um: "Particles 5.0μm",
       Pressure: "Pressure",
       VOC: "VOC",
       Temperature: "Temperature",
@@ -130,18 +112,9 @@
     const units = {
       CO2: "ppm",
       Oxygen: "%",
-      PM10_Standard: "µg/m³",
       PM10_env: "µg/m³",
-      PM1_0_Standard: "µg/m³",
       PM1_0_env: "µg/m³",
-      PM2_5_Standard: "µg/m³",
       PM2_5_env: "µg/m³",
-      Particles_0_3um: "count",
-      Particles_0_5um: "count",
-      Particles_10um: "count",
-      Particles_1_0um: "count",
-      Particles_2_5um: "count",
-      Particles_5_0um: "count",
       Pressure: "Pa",
       VOC: "index",
       Temperature: "°C",
@@ -151,10 +124,10 @@
     function getCommentAndColor(key, value) {
       switch (key) {
         case "CO2":
-          if (value >= -1 && value < 401) return { comment: "Fresh air", color: "#0000FF" };         // Blue
-          if (value >= 399 && value < 1001) return { comment: "Normal indoor", color: "#008000" };  // Green
-          if (value >= 999 && value < 2501) return { comment: "Poor air quality", color: "#FFA500" }; // Orange
-          if (value >= 2501) return { comment: "Unhealthy!", color: "#FF0000" };                    // Red
+          if (value >= -1 && value < 401) return { comment: "Fresh air", color: "#0000FF" };
+          if (value >= 399 && value < 1001) return { comment: "Normal indoor", color: "#008000" };
+          if (value >= 999 && value < 2501) return { comment: "Poor air quality", color: "#FFA500" };
+          if (value >= 2501) return { comment: "Unhealthy!", color: "#FF0000" };
           break;
         case "Oxygen":
           if (value > 20.5) return { comment: "Good", color: "#0000FF" };
@@ -162,30 +135,15 @@
           if (value > 18 && value <= 19) return { comment: "Low oxygen!", color: "#FFA500" };
           if (value >= 0 && value <= 18) return { comment: "Very low oxygen!", color: "#FF0000" };
           break;
-        case "PM2_5_Standard":
-        case "PM1_0_env":
-          if (value >= -1 && value <= 26) return { comment: "Exellent 🥰", color: "#0000FF" };
-          if (value > 25 && value <= 51) return { comment: "Good 😊", color: "#008000" };
-          if (value > 50 && value <= 101) return { comment: "Moderate 😐", color: "#FFA500" };
-          if (value > 100 && value <= 151) return { comment: "Unhealthy 😷", color: "#FF0000" };
-          if (value > 150 && value <= 251) return { comment: "Unhealthy 😷", color: "#FF0000" };
-		  if (value > 249) return { comment: "Very unhealthy 😷", color: "#800080" };
-          break;
         case "PM2_5_env":
+        case "PM1_0_env":
+        case "PM10_env":
           if (value >= -1 && value <= 26) return { comment: "Exellent 🥰", color: "#0000FF" };
           if (value > 25 && value <= 51) return { comment: "Good 😊", color: "#008000" };
           if (value > 50 && value <= 101) return { comment: "Moderate 😐", color: "#FFA500" };
           if (value > 100 && value <= 151) return { comment: "Unhealthy 😷", color: "#FF0000" };
           if (value > 150 && value <= 251) return { comment: "Unhealthy 😷", color: "#FF0000" };
-		  if (value > 249) return { comment: "Very unhealthy 😷", color: "#800080" };
-          break;
-	   case "PM10_env":
-          if (value >= -1 && value <= 26) return { comment: "Exellent 🥰", color: "#0000FF" };
-          if (value > 25 && value <= 51) return { comment: "Good 😊", color: "#008000" };
-          if (value > 50 && value <= 101) return { comment: "Moderate 😐", color: "#FFA500" };
-          if (value > 100 && value <= 151) return { comment: "Unhealthy 😷", color: "#FF0000" };
-          if (value > 150 && value <= 251) return { comment: "Unhealthy 😷", color: "#FF0000" };
-		  if (value > 249) return { comment: "Very unhealthy 😷", color: "#800080" };
+          if (value > 249) return { comment: "Very unhealthy 😷", color: "#800080" };
           break;
         case "VOC":
           if (value >= 0 && value < 50) return { comment: "Low VOC", color: "#0000FF" };
@@ -193,7 +151,7 @@
           if (value >= 150) return { comment: "High VOC", color: "#FF0000" };
           break;
       }
-      return { comment: "", color: "#000000" }; // Default black
+      return { comment: "", color: "#000000" };
     }
 
     function formatTimestamp(ts) {
@@ -217,15 +175,28 @@
         tableBody.innerHTML = '';
         timestampDiv.textContent = "Last Update: " + formatTimestamp(data.Timestamp);
 
-        for (const [key, value] of Object.entries(data)) {
-          if (key === "Timestamp") continue;
+        const displayOrder = [
+          "PM1_0_env",
+          "PM2_5_env",
+          "PM10_env",
+          "Oxygen",
+          "CO2",
+          "Temperature",
+          "Humidity",
+          "Pressure",
+          "VOC"
+        ];
 
+        for (const key of displayOrder) {
+          if (!(key in data)) continue;
+
+          const value = data[key];
           const paramName = parameterNames[key] || key;
           const symbol = parameterSymbols[key] ? ` ${parameterSymbols[key]}` : "";
           const unit = units[key] ? ` ${units[key]}` : "";
 
           let displayValue = value;
-          if (key === "Oxygen" || key === "Humidity" || key === "Temperature") {
+          if (["Oxygen", "Humidity", "Temperature"].includes(key)) {
             displayValue = Number(value).toFixed(2);
           }
 
