@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Historical Indoor Air Quality Data</title>
 
-  <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css"/>
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -18,29 +17,41 @@
       padding: 12px;
       background: #fff;
       color: #2c3e50;
-      font-size: 11px;
+      font-size: 14px;
     }
-    h1, h2 {
+
+    /* Updated real-time style */
+    h1 {
       text-align: center;
-      font-size: 16px;
-      margin: 6px 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 2rem;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      color: #2c3e50;
     }
-    .section { margin-top: 8px; }
+
+    .section { margin-top: 12px; }
+
     button {
       display: block;
-      margin: 6px auto;
-      padding: 6px 14px;
-      font-size: 11px;
+      margin: 20px auto;
+      padding: 12px 28px;
+      font-size: 1rem;
       font-weight: 600;
-      background-color: #3498db;
-      color: white;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      background: linear-gradient(to right, #3498db, #2980b9);
       border: none;
-      border-radius: 6px;
+      border-radius: 25px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-      transition: background-color 0.3s ease, transform 0.15s ease;
+      transition: all 0.25s ease;
     }
-    button:hover { background-color: #2980b9; transform: scale(1.03); }
+    button:hover {
+      background: linear-gradient(to right, #2980b9, #1c5985);
+      transform: scale(1.05);
+    }
+
     #airQuality_wrapper {
       overflow-x: auto;
       overflow-y: auto;
@@ -53,8 +64,8 @@
     table.dataTable {
       width: 100%;
       border-collapse: collapse;
-      font-size: 11px;
-      min-width: 900px;
+      font-size: 14px;
+      min-width: 1000px;
     }
     table.dataTable thead {
       background-color: #c4d7f2;
@@ -66,20 +77,20 @@
       position: sticky;
       top: 0;
       background-color: #c4d7f2;
-      padding: 6px 8px;
+      padding: 8px 10px;
       border: 1px solid #d4dce6;
       text-align: center !important;
       white-space: normal;
       z-index: 10;
-      font-size: 11px;
+      font-size: 14px;
       vertical-align: middle;
     }
     table.dataTable tbody td {
-      padding: 5px 6px;
+      padding: 7px 8px;
       border: 1px solid #d4dce6;
       text-align: center !important;
       white-space: nowrap;
-      font-size: 11px;
+      font-size: 14px;
       vertical-align: middle;
     }
     table.dataTable tbody tr:nth-child(even) {
@@ -92,19 +103,20 @@
     .dataTables_filter input {
       border: 1px solid #bbb;
       border-radius: 4px;
-      padding: 4px 8px;
-      margin-left: 5px;
-      width: 180px;
-      font-size: 11px;
+      padding: 6px 10px;
+      margin-left: 6px;
+      width: 200px;
+      font-size: 14px;
     }
     .dataTables_filter input:focus {
       outline: none;
       border-color: #3498db;
       box-shadow: 0 0 4px #a3c9ff;
     }
+
     @media (max-width: 768px) {
       table.dataTable {
-        min-width: 900px;
+        min-width: 1000px;
       }
     }
   </style>
@@ -113,11 +125,6 @@
   <h1>Historical Indoor Air Quality Data</h1>
 
   <div class="section">
-    <button onclick="window.location.href='index.html'">⬅️ Back to Live Dashboard</button>
-  </div>
-
-  <div class="section">
-    <h2>Historical Data 📈</h2>
     <div id="airQuality_wrapper">
       <table id="airQuality" class="display">
         <thead>
@@ -140,6 +147,12 @@
         </thead>
       </table>
     </div>
+  </div>
+
+  <div class="section">
+    <button onclick="window.location.href='index.html'">
+      ⬅️ Back to View Real-time Indoor Air Quality Data
+    </button>
   </div>
 
   <!-- Scripts -->
@@ -184,15 +197,13 @@
           pageSize: 'A3',
           exportOptions: { columns: ':visible' },
           customize: function (doc) {
-            doc.defaultStyle.fontSize = 7;
-            doc.styles.tableHeader.fontSize = 8;
+            doc.defaultStyle.fontSize = 10;
+            doc.styles.tableHeader.fontSize = 11;
             doc.pageMargins = [60, 20, 60, 20];
-
             doc.content[1].table.widths = [
               90, 70, 70, 60, 60, 60,
-              50, 70, 70, 60, 90, 60, 50, 50
+              50, 70, 70, 60, 90, 60, 60, 60
             ];
-
             doc.content[1].layout = {
               hLineWidth: () => 0.5,
               vLineWidth: () => 0.5,
@@ -202,51 +213,36 @@
               paddingRight: () => 6,
               fillColor: (rowIndex) => (rowIndex % 2 === 0) ? null : '#f5f8fc',
             };
-
-            const headerMap = {
-              'PM1.0<br>(µg/m³)': ['PM1.0', '(µg/m³)'],
-              'PM2.5<br>(µg/m³)': ['PM2.5', '(µg/m³)'],
-              'PM10<br>(µg/m³)': ['PM10', '(µg/m³)'],
-              'O₂<br>(%)': ['O₂', '(%)'],
-              'CO₂<br>(ppm)': ['CO₂', '(ppm)'],
-              'Temperature<br>(°C)': ['Temperature', '(°C)'],
-              'Humidity<br>(%)': ['Humidity', '(%)'],
-              'Pressure<br>(Pa)': ['Pressure', '(Pa)'],
-              'VOC<br>Index': ['VOC', 'Index'],
-              'AIQ<br>PM2.5': ['AIQ PM2.5', ''],
-              'AIQ<br>PM10': ['AIQ PM10', '']
-            };
-
             const body = doc.content[1].table.body;
-
-            // Format header row to show two lines in one cell
-            body[0] = body[0].map(cell => {
-              if (typeof cell === 'string' && headerMap[cell]) {
-                return {
-                  text: headerMap[cell],
-                  alignment: 'center',
-                  margin: [0, 5, 0, 5]
-                };
-              } else if (typeof cell === 'string') {
-                return {
-                  text: [cell, ''],
-                  alignment: 'center',
-                  margin: [0, 5, 0, 5]
-                };
-              }
-              return cell;
-            });
-
-            // Center align all data cells
+            body[0] = [
+              { text: 'Date', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'Time', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'Sensor\nRead', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'PM1.0\n(µg/m³)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'PM2.5\n(µg/m³)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'PM10\n(µg/m³)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'O₂\n(%)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'CO₂\n(ppm)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'Temperature\n(°C)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'Humidity\n(%)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'Pressure\n(Pa)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'VOC\nIndex', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'AIQ\nPM2.5', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
+              { text: 'AIQ\nPM10', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' }
+            ];
             for (let i = 1; i < body.length; i++) {
               for (let j = 0; j < body[i].length; j++) {
                 const val = body[i][j];
                 if (typeof val === 'object') {
-                  body[i][j].alignment = 'center';
+                  val.alignment = 'center';
+                  val.valign = 'middle';
+                  val.margin = [0, 5, 0, 5];
                 } else {
                   body[i][j] = {
-                    text: val,
-                    alignment: 'center'
+                    text: val.toString(),
+                    alignment: 'center',
+                    valign: 'middle',
+                    margin: [0, 5, 0, 5]
                   };
                 }
               }

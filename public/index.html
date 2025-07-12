@@ -5,37 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Air Quality Data</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
+      margin: 0;
+      background: #f4f4f4;
+    }
+
+    .container {
       background: #fff;
-      color: #333;
-      padding: 20px;
-      border-radius: 8px;
+      padding: 20px 15px;
+      max-width: 800px;
+      margin: 20px auto;
+      border-radius: 10px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
+
     h1 {
+      font-family: 'Poppins', Arial, sans-serif;
       text-align: center;
-      color: #2c3e50;
-      margin-bottom: 5px;
-      font-size: 1.8rem;
+      font-size: 2.2rem;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #3498db, #2980b9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.15));
+      letter-spacing: 1.5px;
     }
-    button {
-      display: block;
-      margin: 10px auto 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
+
     #timestamp {
       text-align: center;
       font-style: italic;
@@ -43,15 +41,18 @@
       margin-bottom: 20px;
       font-size: 1rem;
     }
+
     .table-wrapper {
       overflow-x: auto;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 10px;
       min-width: 350px;
     }
+
     th, td {
       padding: 10px 8px;
       border-bottom: 1px solid #ddd;
@@ -60,46 +61,79 @@
       white-space: nowrap;
       vertical-align: middle;
     }
+
     th {
       background-color: #f7f7f7;
       color: #555;
     }
+
     #error-msg {
       color: red;
       font-style: italic;
       text-align: center;
-      margin-top: 10px;
+      margin-bottom: 10px;
       font-size: 1rem;
     }
+
+    button {
+      display: block;
+      margin: 25px auto 0;
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(41, 128, 185, 0.4);
+      transition: background 0.3s ease, transform 0.2s ease;
+      user-select: none;
+    }
+
+    button:hover, button:focus {
+      background: linear-gradient(45deg, #2980b9, #1c5985);
+      transform: scale(1.05);
+      outline: none;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
     @media (max-width: 400px) {
-      body { padding: 10px; }
-      h1 { font-size: 1.4rem; }
+      .container { padding: 15px 10px; }
+      h1 { font-size: 1.6rem; }
       th, td { font-size: 0.9rem; padding: 8px 5px; }
       #timestamp, #error-msg { font-size: 0.9rem; }
+      button { font-size: 1rem; padding: 10px 25px; }
     }
   </style>
 </head>
 <body>
-  <h1>Real-time Air Quality Data</h1>
-  <button onclick="location.href='historical.html'">📈 View Historical Data</button>
-  <div id="timestamp">Loading timestamp...</div>
+  <div class="container">
+    <h1>Real-time Indoor Air Quality Data</h1>
+    <div id="timestamp">Loading timestamp...</div>
 
-  <div class="table-wrapper">
-    <table id="data-table">
-      <thead>
-        <tr>
-          <th>Parameter</th>
-          <th>Value</th>
-          <th>Comment</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td colspan="3" style="text-align:center;">Loading...</td></tr>
-      </tbody>
-    </table>
+    <div class="table-wrapper">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="3" style="text-align:center;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="error-msg"></div>
+
+    <button onclick="location.href='historical.html'">View Historical Indoor Air Quality Data</button>
   </div>
-
-  <div id="error-msg"></div>
 
   <script>
     const parameterSymbols = {
@@ -142,66 +176,51 @@
       switch (key) {
         case "Temperature":
           if (value < 18)                   return { comment: "Too cold ❄️", color: "#0000FF" };
-          if (value >= 18 && value <= 24)  return { comment: "Comfortable 😊", color: "#008000" };
-          if (value > 24 && value <= 30)   return { comment: "Warm ☀️", color: "#B8860B" };
-          if (value > 30)                  return { comment: "Too hot 🔥", color: "#FF0000" };
-          break;
+          if (value <= 24)                  return { comment: "Comfortable 😊", color: "#008000" };
+          if (value <= 30)                  return { comment: "Warm ☀️", color: "#B8860B" };
+          return { comment: "Too hot 🔥", color: "#FF0000" };
         case "Humidity":
-          if (value < 30)                  return { comment: "Too dry 😰", color: "#B8860B" };
-          if (value >= 30 && value <= 60) return { comment: "Comfortable 😊", color: "#008000" };
-          if (value > 60)                 return { comment: "Too humid 🥵", color: "#FF0000" };
-          break;
+          if (value < 30)                   return { comment: "Too dry 😰", color: "#B8860B" };
+          if (value <= 60)                  return { comment: "Comfortable 😊", color: "#008000" };
+          return { comment: "Too humid 🥵", color: "#FF0000" };
         case "Pressure":
-          if (value < 98000) return { comment: "Low pressure - stormy? ⛈️", color: "#0000FF" };
-          if (value >= 98000 && value <= 103000) return { comment: "Normal pressure 🌤️", color: "#008000" };
-          if (value > 103000) return { comment: "High pressure - fair weather ☀️", color: "#B8860B" };
-          break;
+          if (value < 98000)                return { comment: "Low pressure - stormy? ⛈️", color: "#0000FF" };
+          if (value <= 103000)              return { comment: "Normal pressure 🌤️", color: "#008000" };
+          return { comment: "High pressure - fair weather ☀️", color: "#B8860B" };
         case "CO2":
-          if (value >= 0 && value <= 600)    return { comment: "Fresh air 🌿", color: "#0000FF" };
-          if (value > 600 && value <= 1000)  return { comment: "Normal indoor 🏠", color: "#008000" };
-          if (value > 1000 && value <= 2000) return { comment: "Moderate CO₂ 😐", color: "#B8860B" };
-          if (value > 2000 && value <= 5000) return { comment: "Poor air quality 😷", color: "#B8860B" };
-          if (value > 5000)                  return { comment: "Unhealthy! ☠️", color: "#FF0000" };
-          break;
+          if (value <= 600)                 return { comment: "Fresh air 🌿", color: "#0000FF" };
+          if (value <= 1000)                return { comment: "Normal indoor 🏠", color: "#008000" };
+          if (value <= 2000)                return { comment: "Moderate CO₂ 😐", color: "#B8860B" };
+          if (value <= 5000)                return { comment: "Poor air quality 😷", color: "#B8860B" };
+          return { comment: "Unhealthy! ☠️", color: "#FF0000" };
         case "Oxygen":
-          if (value > 20.8 && value <= 23.5) return { comment: "Good 😊", color: "#0000FF" };
-          if (value > 19.5 && value <= 20.8) return { comment: "Acceptable 🙂", color: "#008000" };
-          if (value > 18.0 && value <= 19.5) return { comment: "Low oxygen! ⚠️", color: "#B8860B" };
-          if (value >= 0 && value <= 18.0)   return { comment: "Very low oxygen! ☠️", color: "#FF0000" };
-          break;
+          if (value > 20.8)                 return { comment: "Good 😊", color: "#0000FF" };
+          if (value > 19.5)                 return { comment: "Acceptable 🙂", color: "#008000" };
+          if (value > 18.0)                 return { comment: "Low oxygen! ⚠️", color: "#B8860B" };
+          return { comment: "Very low oxygen! ☠️", color: "#FF0000" };
         case "PM1_0_env":
-          if (value >= 0 && value <= 20)    return { comment: "Excellent 🥰", color: "#0000FF" };
-          if (value > 20 && value <= 40)    return { comment: "Good 😊", color: "#00B050" };
-          if (value > 40 && value <= 80)    return { comment: "Moderate 😐", color: "#B8860B" };
-          if (value > 80 && value <= 120)   return { comment: "Unhealthy 😷", color: "#FF0000" };
-          if (value > 120 && value <= 200)  return { comment: "Very Unhealthy 🥵", color: "#800080" };
-          if (value > 200)                  return { comment: "Hazardous ☠️", color: "#7E0023" };
-          break;
         case "PM2_5_env":
-          if (value >= 0 && value <= 25)   return { comment: "Excellent 🥰", color: "#0000FF" };
-          if (value > 25 && value <= 50)   return { comment: "Good 😊", color: "#00B050" };
-          if (value > 50 && value <= 100)  return { comment: "Moderate 😐", color: "#B8860B" };
-          if (value > 100 && value <= 150) return { comment: "Unhealthy 😷", color: "#FF0000" };
-          if (value > 150 && value <= 250) return { comment: "Very Unhealthy 🥵", color: "#800080" };
-          if (value > 250)                 return { comment: "Hazardous ☠️", color: "#7E0023" };
-          break;
         case "PM10_env":
-          if (value >= 0 && value <= 50)    return { comment: "Excellent 🥰", color: "#0000FF" };
-          if (value > 50 && value <= 100)   return { comment: "Good 😊", color: "#00B050" };
-          if (value > 100 && value <= 200)  return { comment: "Moderate 😐", color: "#B8860B" };
-          if (value > 200 && value <= 300)  return { comment: "Unhealthy 😷", color: "#FF0000" };
-          if (value > 300 && value <= 400)  return { comment: "Very Unhealthy 🥵", color: "#800080" };
-          if (value > 400)                  return { comment: "Hazardous ☠️", color: "#7E0023" };
-          break;
+          const pmLimits = {
+            PM1_0_env: [20, 40, 80, 120, 200],
+            PM2_5_env: [25, 50, 100, 150, 250],
+            PM10_env: [50, 100, 200, 300, 400]
+          };
+          const comments = ["Excellent 🥰", "Good 😊", "Moderate 😐", "Unhealthy 😷", "Very Unhealthy 🥵", "Hazardous ☠️"];
+          const colors = ["#0000FF", "#00B050", "#B8860B", "#FF0000", "#800080", "#7E0023"];
+          const limits = pmLimits[key];
+          for (let i = 0; i < limits.length; i++) {
+            if (value <= limits[i]) return { comment: comments[i], color: colors[i] };
+          }
+          return { comment: comments[5], color: colors[5] };
         case "VOC":
-          if (value >= 0 && value <= 50)   return { comment: "Excellent 🥰", color: "#0000FF" };
-          if (value > 50 && value <= 100)  return { comment: "Good 😊", color: "#00B050" };
-          if (value > 100 && value <= 150) return { comment: "Moderate 😐", color: "#B8860B" };
-          if (value > 150 && value <= 200) return { comment: "Unhealthy for Sensitive 😷", color: "#B8860B" };
-          if (value > 200 && value <= 300) return { comment: "Unhealthy 😵", color: "#FF0000" };
-          if (value > 300 && value <= 400) return { comment: "Very Unhealthy 🥵", color: "#800080" };
-          if (value > 400 && value <= 500) return { comment: "Hazardous ☠️", color: "#7E0023" };
-          break;
+          if (value <= 50) return { comment: "Excellent 🥰", color: "#0000FF" };
+          if (value <= 100) return { comment: "Good 😊", color: "#00B050" };
+          if (value <= 150) return { comment: "Moderate 😐", color: "#B8860B" };
+          if (value <= 200) return { comment: "Unhealthy for Sensitive 😷", color: "#B8860B" };
+          if (value <= 300) return { comment: "Unhealthy 😵", color: "#FF0000" };
+          if (value <= 400) return { comment: "Very Unhealthy 🥵", color: "#800080" };
+          return { comment: "Hazardous ☠️", color: "#7E0023" };
       }
       return { comment: "", color: "#000000" };
     }
