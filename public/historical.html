@@ -17,29 +17,22 @@
       padding: 16px;
       background: #fff;
       color: #2c3e50;
-      font-size: 16px; /* increased base font size */
+      font-size: 16px;
     }
-
-    /* Updated heading style */
     h1 {
       text-align: center;
-      font-family: 'Inter', sans-serif;
-      font-size: 2.5rem; /* larger font */
+      font-size: 2.5rem;
       margin-top: 12px;
       margin-bottom: 24px;
-      color: #2c3e50;
       font-weight: 600;
     }
-
     .section { margin-top: 16px; }
-
     button {
       display: block;
       margin: 24px auto;
       padding: 16px 36px;
-      font-size: 1.2rem; /* larger font */
+      font-size: 1.2rem;
       font-weight: 600;
-      font-family: 'Inter', sans-serif;
       color: #fff;
       background: linear-gradient(to right, #3498db, #2980b9);
       border: none;
@@ -47,7 +40,6 @@
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
       cursor: pointer;
       transition: all 0.25s ease;
-      user-select: none;
     }
     button:hover {
       background: linear-gradient(to right, #2980b9, #1c5985);
@@ -60,56 +52,56 @@
       max-height: 75vh;
       border: 1px solid #ccd7e0;
       border-radius: 6px;
-      box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.1);
       background: #f9fbfd;
     }
+
     table.dataTable {
       width: 100%;
       border-collapse: collapse;
-      font-size: 16px; /* increased font size */
       min-width: 1000px;
     }
+
     table.dataTable thead {
       background-color: #c4d7f2;
       color: #2c3e50;
       font-weight: 700;
-      user-select: none;
     }
+
     table.dataTable thead th {
       position: sticky;
       top: 0;
       background-color: #c4d7f2;
-      padding: 12px 14px; /* increased padding */
+      padding: 12px 14px;
       border: 1px solid #d4dce6;
-      text-align: center !important;
+      text-align: center;
       white-space: normal;
       z-index: 10;
-      font-size: 16px; /* increased font size */
-      vertical-align: middle;
     }
+
     table.dataTable tbody td {
-      padding: 10px 12px; /* increased padding */
+      padding: 10px 12px;
       border: 1px solid #d4dce6;
-      text-align: center !important;
+      text-align: center;
       white-space: nowrap;
-      font-size: 16px; /* increased font size */
-      vertical-align: middle;
     }
+
     table.dataTable tbody tr:nth-child(even) {
       background-color: #f5f8fc;
     }
+
     table.dataTable tbody tr:hover {
       background-color: #dce9fb;
       transition: background-color 0.3s ease;
     }
+
     .dataTables_filter input {
       border: 1px solid #bbb;
       border-radius: 4px;
-      padding: 8px 12px; /* increased padding */
+      padding: 8px 12px;
       margin-left: 6px;
-      width: 220px; /* slightly wider */
-      font-size: 16px; /* increased font size */
+      width: 220px;
     }
+
     .dataTables_filter input:focus {
       outline: none;
       border-color: #3498db;
@@ -117,9 +109,7 @@
     }
 
     @media (max-width: 768px) {
-      table.dataTable {
-        min-width: 1000px;
-      }
+      table.dataTable { min-width: 1000px; }
     }
   </style>
 </head>
@@ -170,6 +160,7 @@
   <script>
     const table = new DataTable('#airQuality', {
       responsive: true,
+      ordering: false, // disable all sorting
       ajax: {
         url: 'https://script.google.com/macros/s/AKfycbyZcQO_IDz4NxeM_52HnR1n7TuwMa5-NprGUuwu0bqkez8mUbyL9dARt2z7P5wLS2h7/exec',
         dataSrc: json => json.data || json
@@ -190,71 +181,19 @@
         { data: row => row['AIQ PM2.5'] ?? '-' },
         { data: row => row['AIQ PM10'] ?? '-' }
       ],
-      order: [[0, 'desc'], [1, 'desc']],
       dom: 'Brtip',
       buttons: [
         {
           extend: 'pdfHtml5',
           orientation: 'landscape',
           pageSize: 'A3',
-          exportOptions: { columns: ':visible' },
-          customize: function (doc) {
-            doc.defaultStyle.fontSize = 12; // increased font size
-            doc.styles.tableHeader.fontSize = 14;
-            doc.pageMargins = [60, 20, 60, 20];
-            doc.content[1].table.widths = [
-              90, 70, 70, 60, 60, 60,
-              50, 70, 70, 60, 90, 60, 60, 60
-            ];
-            doc.content[1].layout = {
-              hLineWidth: () => 0.5,
-              vLineWidth: () => 0.5,
-              hLineColor: () => '#ccc',
-              vLineColor: () => '#ccc',
-              paddingLeft: () => 6,
-              paddingRight: () => 6,
-              fillColor: (rowIndex) => (rowIndex % 2 === 0) ? null : '#f5f8fc',
-            };
-            const body = doc.content[1].table.body;
-            body[0] = [
-              { text: 'Date', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'Time', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'Sensor\nRead', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'PM1.0\n(µg/m³)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'PM2.5\n(µg/m³)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'PM10\n(µg/m³)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'O₂\n(%)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'CO₂\n(ppm)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'Temperature\n(°C)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'Humidity\n(%)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'Pressure\n(Pa)', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'VOC\nIndex', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'AIQ\nPM2.5', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' },
-              { text: 'AIQ\nPM10', alignment: 'center', margin: [0, 5, 0, 5], valign: 'middle' }
-            ];
-            for (let i = 1; i < body.length; i++) {
-              for (let j = 0; j < body[i].length; j++) {
-                const val = body[i][j];
-                if (typeof val === 'object') {
-                  val.alignment = 'center';
-                  val.valign = 'middle';
-                  val.margin = [0, 5, 0, 5];
-                } else {
-                  body[i][j] = {
-                    text: val.toString(),
-                    alignment: 'center',
-                    valign: 'middle',
-                    margin: [0, 5, 0, 5]
-                  };
-                }
-              }
-            }
-          }
+          exportOptions: { columns: ':visible' }
         },
         'colvis'
       ]
     });
 
+    // auto-refresh every 5 seconds
     setInterval(() => table.ajax.reload(null, false), 5000);
   </script>
 </body>
