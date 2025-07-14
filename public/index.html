@@ -8,7 +8,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       background: #f4f4f4;
     }
@@ -16,55 +16,27 @@
     .container {
       background: #fff;
       padding: 20px 15px;
-      max-width: 800px;
+      max-width: 900px;
       margin: 20px auto;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
 
     h1 {
-      font-family: 'Poppins', Arial, sans-serif;
+      font-size: 2.2rem;
       text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 15px;
       background: linear-gradient(90deg, #3498db, #2980b9);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.15));
-      letter-spacing: 1.5px;
+      margin-bottom: 10px;
     }
 
     #timestamp {
       text-align: center;
       font-style: italic;
-      color: #666;
-      margin-bottom: 20px;
-      font-size: 1.1rem;
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 10px;
-      min-width: 350px;
-    }
-
-    th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-      font-size: 1.2rem;
-      white-space: nowrap;
-      vertical-align: middle;
-    }
-
-    th {
-      background-color: #f7f7f7;
       color: #555;
+      margin-bottom: 20px;
     }
 
     #error-msg {
@@ -72,14 +44,51 @@
       font-style: italic;
       text-align: center;
       margin-bottom: 10px;
-      font-size: 1.1rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 15px;
+    }
+
+    .data-card {
+      background: #fdfdfd;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .data-name {
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    .data-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    .data-unit-small {
+      font-size: 0.8rem;
+      margin-left: 4px;
+    }
+
+    .data-comment {
+      font-size: 1rem;
+      margin-top: 4px;
     }
 
     button {
       display: block;
-      margin: 25px auto 0;
+      margin: 30px auto 0;
       padding: 14px 34px;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: white;
       background: linear-gradient(45deg, #3498db, #2980b9);
@@ -88,25 +97,11 @@
       cursor: pointer;
       box-shadow: 0 6px 15px rgba(41, 128, 185, 0.4);
       transition: background 0.3s ease, transform 0.2s ease;
-      user-select: none;
     }
 
-    button:hover, button:focus {
+    button:hover {
       background: linear-gradient(45deg, #2980b9, #1c5985);
       transform: scale(1.05);
-      outline: none;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    @media (max-width: 400px) {
-      .container { padding: 15px 10px; }
-      h1 { font-size: 2rem; }
-      th, td { font-size: 1rem; padding: 10px 6px; }
-      #timestamp, #error-msg { font-size: 1rem; }
-      button { font-size: 1.1rem; padding: 12px 28px; }
     }
   </style>
 </head>
@@ -114,24 +109,10 @@
   <div class="container">
     <h1>Real-time Indoor Air Quality Data</h1>
     <div id="timestamp">Loading timestamp...</div>
-
-    <div class="table-wrapper">
-      <table id="data-table">
-        <thead>
-          <tr>
-            <th>Parameter</th>
-            <th>Value</th>
-            <th>Comment</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td colspan="3" style="text-align:center;">Loading...</td></tr>
-        </tbody>
-      </table>
-    </div>
-
     <div id="error-msg"></div>
-
+    <div class="card-grid" id="data-grid">
+      <div style="grid-column: 1 / -1; text-align: center;">Loading data...</div>
+    </div>
     <button onclick="location.href='historical.html'">View Historical Indoor Air Quality Data</button>
   </div>
 
@@ -139,9 +120,9 @@
     const parameterSymbols = {
       CO2: "🫧️️",
       Oxygen: "🫁",
-      PM10_env: "🌍",
-      PM1_0_env: "🌍️",
-      PM2_5_env: "🌍️",
+      PM10_env: "🏜️",
+      PM1_0_env: "🟤",
+      PM2_5_env: "🌁 ️",
       Pressure: "💨",
       VOC: "🧪",
       Temperature: "🌡️",
@@ -175,28 +156,28 @@
     function getCommentAndColor(key, value) {
       switch (key) {
         case "Temperature":
-          if (value < 18)                   return { comment: "Too cold ❄️", color: "#0000FF" };
-          if (value <= 24)                  return { comment: "Comfortable 😊", color: "#008000" };
-          if (value <= 30)                  return { comment: "Warm ☀️", color: "#B8860B" };
+          if (value < 18) return { comment: "Too cold ❄️", color: "#0000FF" };
+          if (value <= 24) return { comment: "Comfortable 😊", color: "#008000" };
+          if (value <= 30) return { comment: "Warm ☀️", color: "#B8860B" };
           return { comment: "Too hot 🔥", color: "#FF0000" };
         case "Humidity":
-          if (value < 30)                   return { comment: "Too dry 😰", color: "#B8860B" };
-          if (value <= 60)                  return { comment: "Comfortable 😊", color: "#008000" };
+          if (value < 30) return { comment: "Too dry 😰", color: "#B8860B" };
+          if (value <= 60) return { comment: "Comfortable 😊", color: "#008000" };
           return { comment: "Too humid 🥵", color: "#FF0000" };
         case "Pressure":
-          if (value < 98000)                return { comment: "Low pressure - stormy? ⛈️", color: "#0000FF" };
-          if (value <= 103000)              return { comment: "Normal pressure 🌤️", color: "#008000" };
+          if (value < 98000) return { comment: "Low pressure - stormy? ⛈️", color: "#0000FF" };
+          if (value <= 103000) return { comment: "Normal pressure 🌤️", color: "#008000" };
           return { comment: "High pressure - fair weather ☀️", color: "#B8860B" };
         case "CO2":
-          if (value <= 600)                 return { comment: "Fresh air 🌿", color: "#0000FF" };
-          if (value <= 1000)                return { comment: "Normal indoor 🏠", color: "#008000" };
-          if (value <= 2000)                return { comment: "Moderate CO₂ 😐", color: "#B8860B" };
-          if (value <= 5000)                return { comment: "Poor air quality 😷", color: "#B8860B" };
+          if (value <= 600) return { comment: "Fresh air 🌿", color: "#0000FF" };
+          if (value <= 1000) return { comment: "Normal indoor 🏠", color: "#008000" };
+          if (value <= 2000) return { comment: "Moderate CO₂ 😐", color: "#B8860B" };
+          if (value <= 5000) return { comment: "Poor air quality 😷", color: "#B8860B" };
           return { comment: "Unhealthy! ☠️", color: "#FF0000" };
         case "Oxygen":
-          if (value > 20.8)                 return { comment: "Good 😊", color: "#0000FF" };
-          if (value > 19.5)                 return { comment: "Acceptable 🙂", color: "#008000" };
-          if (value > 18.0)                 return { comment: "Low oxygen! ⚠️", color: "#B8860B" };
+          if (value > 20.8) return { comment: "Good 😊", color: "#0000FF" };
+          if (value > 19.5) return { comment: "Acceptable 🙂", color: "#008000" };
+          if (value > 18.0) return { comment: "Low oxygen! ⚠️", color: "#B8860B" };
           return { comment: "Very low oxygen! ☠️", color: "#FF0000" };
         case "PM1_0_env":
         case "PM2_5_env":
@@ -226,14 +207,12 @@
     }
 
     function formatTimestamp(ts) {
-      if (!ts) return "No timestamp available";
       const date = new Date(ts);
-      if (isNaN(date)) return ts;
-      return date.toLocaleString();
+      return isNaN(date) ? ts : date.toLocaleString();
     }
 
     async function fetchData() {
-      const tableBody = document.querySelector('#data-table tbody');
+      const grid = document.getElementById('data-grid');
       const errorDiv = document.getElementById('error-msg');
       const timestampDiv = document.getElementById('timestamp');
 
@@ -243,8 +222,8 @@
 
         const data = await response.json();
         errorDiv.textContent = '';
-        tableBody.innerHTML = '';
         timestampDiv.textContent = "Last Update: " + formatTimestamp(data.Timestamp);
+        grid.innerHTML = '';
 
         const displayOrder = [
           "PM1_0_env", "PM2_5_env", "PM10_env",
@@ -257,27 +236,24 @@
 
           const value = data[key];
           const paramName = parameterNames[key] || key;
-          const symbol = parameterSymbols[key] ? ` ${parameterSymbols[key]}` : "";
-          const unit = units[key] ? ` ${units[key]}` : "";
+          const symbol = parameterSymbols[key] || '';
+          const unit = units[key] || '';
+          const valFixed = ["Oxygen", "Humidity", "Temperature"].includes(key) ? Number(value).toFixed(2) : value;
 
-          let displayValue = value;
-          if (["Oxygen", "Humidity", "Temperature"].includes(key)) {
-            displayValue = Number(value).toFixed(2);
-          }
+          const { comment, color } = getCommentAndColor(key, value);
 
-          const { comment, color: textColor } = getCommentAndColor(key, value);
-
-          tableBody.insertAdjacentHTML('beforeend', `
-            <tr>
-              <td>${paramName}${symbol}</td>
-              <td style="color:${textColor};">${displayValue}${unit}</td>
-              <td>${comment}</td>
-            </tr>
+          grid.insertAdjacentHTML("beforeend", `
+            <div class="data-card">
+              <div class="data-name">${paramName} ${symbol}</div>
+              <div class="data-value" style="color:${color}">
+                ${valFixed}<span class="data-unit-small" style="color:${color}">${unit}</span>
+              </div>
+              <div class="data-comment">${comment}</div>
+            </div>
           `);
         }
-
       } catch (error) {
-        tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; font-style: italic;">Error loading data</td></tr>`;
+        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; color:red;">Error loading data</div>`;
         errorDiv.textContent = error.message;
         timestampDiv.textContent = "";
         console.error('Error fetching data:', error);
