@@ -122,7 +122,8 @@
       Oxygen: "🫁",
       PM10_env: "🏜️",
       PM1_0_env: "🟤",
-      PM2_5_env: "🌁 ️",
+      PM2_5_env: "🌁",
+      AQI_PM2_5: "📊",
       Pressure: "💨",
       VOC: "🧪",
       Temperature: "🌡️",
@@ -135,6 +136,7 @@
       PM10_env: "PM10",
       PM1_0_env: "PM1",
       PM2_5_env: "PM2.5",
+      AQI_PM2_5: "AQI PM2.5",
       Pressure: "Pressure",
       VOC: "VOC",
       Temperature: "Temperature",
@@ -147,6 +149,7 @@
       PM10_env: "µg/m³",
       PM1_0_env: "µg/m³",
       PM2_5_env: "µg/m³",
+      AQI_PM2_5: "AQI",
       Pressure: "Pa",
       VOC: "index",
       Temperature: "°C",
@@ -194,6 +197,13 @@
             if (value <= limits[i]) return { comment: comments[i], color: colors[i] };
           }
           return { comment: comments[5], color: colors[5] };
+        case "AQI_PM2_5":
+          if (value <= 50) return { comment: "Excellent 🥰", color: "#0000FF" };
+          if (value <= 100) return { comment: "Good 😊", color: "#00B050" };
+          if (value <= 150) return { comment: "Moderate 😐", color: "#B8860B" };
+          if (value <= 200) return { comment: "Unhealthy 😷", color: "#FF0000" };
+          if (value <= 300) return { comment: "Very Unhealthy 🥵", color: "#800080" };
+          return { comment: "Hazardous ☠️", color: "#7E0023" };
         case "VOC":
           if (value <= 50) return { comment: "Excellent 🥰", color: "#0000FF" };
           if (value <= 100) return { comment: "Good 😊", color: "#00B050" };
@@ -226,7 +236,7 @@
         grid.innerHTML = '';
 
         const displayOrder = [
-          "PM1_0_env", "PM2_5_env", "PM10_env",
+          "PM1_0_env", "PM2_5_env", "AQI_PM2_5", "PM10_env",
           "Oxygen", "CO2", "Temperature", "Humidity",
           "Pressure", "VOC"
         ];
