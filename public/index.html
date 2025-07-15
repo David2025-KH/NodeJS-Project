@@ -53,14 +53,17 @@
     }
 
     .data-card {
+      position: relative;
       background: #fdfdfd;
       border-radius: 12px;
-      padding: 15px;
+      padding: 15px 15px 15px 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      border-left: 6px solid transparent;
+      transition: border-color 0.3s ease;
     }
 
     .data-card.double {
@@ -76,16 +79,20 @@
       font-size: 1.8rem;
       font-weight: bold;
       margin: 5px 0;
+      color: #111111; /* Always dark for readability */
     }
 
     .data-unit-small {
       font-size: 0.8rem;
       margin-left: 4px;
+      color: #555555; /* Softer dark */
     }
 
     .data-comment {
       font-size: 1rem;
       margin-top: 4px;
+      font-weight: 600;
+      /* color set dynamically by JS */
     }
 
     button {
@@ -217,7 +224,7 @@
           if (value <= 300) return { comment: comments[4], color: colors[4] };
           return { comment: comments[5], color: colors[5] };
       }
-      return { comment: "", color: "#000" };
+      return { comment: "", color: "#000000" };
     }
 
     function formatTimestamp(ts) {
@@ -239,7 +246,7 @@
         timestampDiv.textContent = "Last Update: " + formatTimestamp(data.Timestamp);
         grid.innerHTML = '';
 
-        // Combined PM2.5 and AQI PM2.5
+        // Combined PM2.5 and AQI PM2.5 double card
         if ("PM2_5_env" in data && "AQI_PM2_5" in data) {
           const pm25Val = data["PM2_5_env"];
           const aqiVal = data["AQI_PM2_5"];
@@ -247,22 +254,23 @@
           const aqi = getCommentAndColor("AQI_PM2_5", aqiVal);
 
           grid.insertAdjacentHTML("beforeend", `
-            <div class="data-card double">
+            <div class="data-card double" style="border-left-color: ${pm25.color};">
               <div class="data-name">${parameterNames["PM2_5_env"]} ${parameterSymbols["PM2_5_env"]}</div>
-              <div class="data-value" style="color:${pm25.color}">
-                ${pm25Val}<span class="data-unit-small" style="color:${pm25.color}">${units["PM2_5_env"]}</span>
+              <div class="data-value">
+                ${pm25Val}<span class="data-unit-small">${units["PM2_5_env"]}</span>
               </div>
-              <div class="data-comment">${pm25.comment}</div>
+              <div class="data-comment" style="color:${pm25.color}">${pm25.comment}</div>
+
               <div class="data-name" style="margin-top:10px;">${parameterNames["AQI_PM2_5"]} ${parameterSymbols["AQI_PM2_5"]}</div>
-              <div class="data-value" style="color:${aqi.color}">
-                ${aqiVal}<span class="data-unit-small" style="color:${aqi.color}">${units["AQI_PM2_5"]}</span>
+              <div class="data-value">
+                ${aqiVal}<span class="data-unit-small">${units["AQI_PM2_5"]}</span>
               </div>
-              <div class="data-comment">${aqi.comment}</div>
+              <div class="data-comment" style="color:${aqi.color}">${aqi.comment}</div>
             </div>
           `);
         }
 
-        // Remaining keys
+        // Other parameters display order
         const displayOrder = [
           "PM1_0_env", "PM10_env", "Oxygen", "CO2",
           "Temperature", "Humidity", "Pressure", "VOC"
@@ -282,12 +290,12 @@
           const { comment, color } = getCommentAndColor(key, value);
 
           grid.insertAdjacentHTML("beforeend", `
-            <div class="data-card">
+            <div class="data-card" style="border-left-color: ${color};">
               <div class="data-name">${paramName} ${symbol}</div>
-              <div class="data-value" style="color:${color}">
-                ${valFixed}<span class="data-unit-small" style="color:${color}">${unit}</span>
+              <div class="data-value">
+                ${valFixed}<span class="data-unit-small">${unit}</span>
               </div>
-              <div class="data-comment">${comment}</div>
+              <div class="data-comment" style="color: ${color}">${comment}</div>
             </div>
           `);
         }
