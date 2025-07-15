@@ -21,25 +21,25 @@
     }
     h1 {
       text-align: center;
-      font-size: 2.5rem;
-      margin-top: 12px;
-      margin-bottom: 24px;
+      font-size: 2.2rem;
+      margin-bottom: 20px;
       font-weight: 600;
     }
     .section { margin-top: 16px; }
+
     button {
       display: block;
-      margin: 24px auto;
-      padding: 16px 36px;
-      font-size: 1.2rem;
+      margin: 20px auto;
+      padding: 12px 28px;
+      font-size: 1rem;
       font-weight: 600;
       color: #fff;
       background: linear-gradient(to right, #3498db, #2980b9);
       border: none;
       border-radius: 25px;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: 0.25s ease;
     }
     button:hover {
       background: linear-gradient(to right, #2980b9, #1c5985);
@@ -48,7 +48,6 @@
 
     #airQuality_wrapper {
       overflow-x: auto;
-      overflow-y: auto;
       max-height: 75vh;
       border: 1px solid #ccd7e0;
       border-radius: 6px;
@@ -60,52 +59,52 @@
       border-collapse: collapse;
       min-width: 1000px;
     }
-
     table.dataTable thead {
       background-color: #c4d7f2;
       color: #2c3e50;
       font-weight: 700;
     }
-
-    table.dataTable thead th {
-      position: sticky;
-      top: 0;
-      background-color: #c4d7f2;
-      padding: 12px 14px;
-      border: 1px solid #d4dce6;
-      text-align: center;
-      white-space: normal;
-      z-index: 10;
-    }
-
+    table.dataTable thead th,
     table.dataTable tbody td {
       padding: 10px 12px;
       border: 1px solid #d4dce6;
-      text-align: center;
+      text-align: center !important;
+      vertical-align: middle !important;
       white-space: nowrap;
     }
-
     table.dataTable tbody tr:nth-child(even) {
       background-color: #f5f8fc;
     }
-
     table.dataTable tbody tr:hover {
       background-color: #dce9fb;
       transition: background-color 0.3s ease;
     }
 
-    .dataTables_filter input {
-      border: 1px solid #bbb;
-      border-radius: 4px;
-      padding: 8px 12px;
-      margin-left: 6px;
-      width: 220px;
+    .dataTables_filter {
+      display: none; /* Hide search bar */
     }
 
-    .dataTables_filter input:focus {
-      outline: none;
-      border-color: #3498db;
-      box-shadow: 0 0 4px #a3c9ff;
+    /* Align DataTables info + Add "All" button inline */
+    .dataTables_info {
+      display: inline-block;
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+    .show-all-btn {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-left: 4px;
+      padding: 6px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .show-all-btn:hover {
+      background: #1f6fb2;
     }
 
     @media (max-width: 768px) {
@@ -160,7 +159,8 @@
   <script>
     const table = new DataTable('#airQuality', {
       responsive: true,
-      ordering: false, // disable all sorting
+      ordering: false,
+      pageLength: 10,
       ajax: {
         url: 'https://script.google.com/macros/s/AKfycbyZcQO_IDz4NxeM_52HnR1n7TuwMa5-NprGUuwu0bqkez8mUbyL9dARt2z7P5wLS2h7/exec',
         dataSrc: json => json.data || json
@@ -187,13 +187,90 @@
           extend: 'pdfHtml5',
           orientation: 'landscape',
           pageSize: 'A3',
-          exportOptions: { columns: ':visible' }
+          exportOptions: { columns: ':visible' },
+          customize: function (doc) {
+            doc.defaultStyle.fontSize = 10;
+
+            // Create two-line headers with correct text (no subscripts in PDF)
+            const twoLineHeaders = [
+              'Date\n(YYYY-MM-DD)',
+              ['Time', '(HH:mm:ss)'],
+              'Sensor Read',
+              'PM1.0\n(µg/m³)',
+              'PM2.5\n(µg/m³)',
+              'PM10\n(µg/m³)',
+              'O2\n(%)',      // replaced subscript ₂ with plain 2
+              'CO2\n(ppm)',   // replaced subscript ₂ with plain 2
+              'Temperature\n(°C)',
+              'Humidity\n(%)',
+              'Pressure\n(Pa)',
+              'VOC\nIndex',
+              'AIQ\nPM2.5',
+              'AIQ\nPM10'
+            ];
+
+            // Replace header row text with two-line headers
+            doc.content[1].table.body[0].forEach((cell, i) => {
+              if (Array.isArray(twoLineHeaders[i])) {
+                cell.text = twoLineHeaders[i].join('\n');
+              } else {
+                cell.text = twoLineHeaders[i];
+              }
+              cell.fillColor = '#c4d7f2';
+              cell.color = '#2c3e50';
+              cell.alignment = 'center';
+              cell.margin = [3, 5, 3, 5];
+              cell.bold = true;
+            });
+
+            // Center align all data cells with padding
+            doc.content[1].table.body.forEach((row, i) => {
+              if (i === 0) return; // skip header row
+              row.forEach(cell => {
+                cell.alignment = 'center';
+                cell.margin = [3, 5, 3, 5];
+              });
+            });
+
+            // Alternate row background color (striping)
+            for (let i = 1; i < doc.content[1].table.body.length; i++) {
+              if (i % 2 === 0) {
+                doc.content[1].table.body[i].forEach(cell => {
+                  cell.fillColor = '#f5f8fc';
+                });
+              }
+            }
+
+            // Table borders styling
+            doc.content[1].layout = {
+              hLineWidth: (i, node) => 1,
+              vLineWidth: (i, node) => 1,
+              hLineColor: (i, node) => '#d4dce6',
+              vLineColor: (i, node) => '#d4dce6',
+              paddingLeft: (i, node) => 4,
+              paddingRight: (i, node) => 4,
+              paddingTop: (i, node) => 6,
+              paddingBottom: (i, node) => 6
+            };
+          }
         },
         'colvis'
-      ]
+      ],
+      initComplete: function () {
+        const infoArea = document.querySelector('.dataTables_info');
+        const allBtn = document.createElement('button');
+        allBtn.className = 'show-all-btn';
+        allBtn.innerText = 'All';
+        allBtn.title = "Show all entries";
+        allBtn.onclick = () => {
+          const total = table.page.info().recordsTotal;
+          table.page.len(total).draw();
+        };
+        infoArea.parentNode.insertBefore(allBtn, infoArea.nextSibling);
+      }
     });
 
-    // auto-refresh every 5 seconds
+    // Auto-refresh every 5 seconds
     setInterval(() => table.ajax.reload(null, false), 5000);
   </script>
 </body>
