@@ -55,14 +55,14 @@
     .data-card {
       position: relative;
       background: #fdfdfd;
-      border-radius: 12px;
+      border-radius: 20px;
       padding: 15px 15px 15px 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      border-left: 6px solid transparent;
+      border: 4px solid transparent; /* full thick colored border */
       transition: border-color 0.3s ease;
     }
 
@@ -79,20 +79,19 @@
       font-size: 1.8rem;
       font-weight: bold;
       margin: 5px 0;
-      color: #111111; /* Always dark for readability */
+      color: #111111;
     }
 
     .data-unit-small {
       font-size: 0.8rem;
       margin-left: 4px;
-      color: #555555; /* Softer dark */
+      color: #555555;
     }
 
     .data-comment {
       font-size: 1rem;
       margin-top: 4px;
       font-weight: 600;
-      /* color set dynamically by JS */
     }
 
     button {
@@ -254,7 +253,7 @@
           const aqi = getCommentAndColor("AQI_PM2_5", aqiVal);
 
           grid.insertAdjacentHTML("beforeend", `
-            <div class="data-card double" style="border-left-color: ${pm25.color};">
+            <div class="data-card double" style="border-color: ${pm25.color};">
               <div class="data-name">${parameterNames["PM2_5_env"]} ${parameterSymbols["PM2_5_env"]}</div>
               <div class="data-value">
                 ${pm25Val}<span class="data-unit-small">${units["PM2_5_env"]}</span>
@@ -270,7 +269,6 @@
           `);
         }
 
-        // Other parameters display order
         const displayOrder = [
           "PM1_0_env", "PM10_env", "Oxygen", "CO2",
           "Temperature", "Humidity", "Pressure", "VOC"
@@ -290,7 +288,7 @@
           const { comment, color } = getCommentAndColor(key, value);
 
           grid.insertAdjacentHTML("beforeend", `
-            <div class="data-card" style="border-left-color: ${color};">
+            <div class="data-card" style="border-color: ${color};">
               <div class="data-name">${paramName} ${symbol}</div>
               <div class="data-value">
                 ${valFixed}<span class="data-unit-small">${unit}</span>
