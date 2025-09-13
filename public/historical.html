@@ -122,7 +122,6 @@
           <tr>
             <th>Date</th>
             <th>Time</th>
-            <th>Sensor Read</th>
             <th>PM1.0<br>(µg/m³)</th>
             <th>PM2.5<br>(µg/m³)</th>
             <th>PM10<br>(µg/m³)</th>
@@ -162,13 +161,12 @@
       ordering: false,
       pageLength: 10,
       ajax: {
-        url: 'https://script.google.com/macros/s/AKfycby4Q70Ei3O6RlzZ0AMdF-RQMlzWcay1GKXH9hd13WsfGKmhzRRvKQzRdLQt1MSyKShJ/exec',
+        url: 'https://script.google.com/macros/s/AKfycbyukOfWzQ2p4YDMWeCMlGsyNWxSOH-TdbwNI_bGqNL8WLlwVBEY00ifO1BXkTLYKvfh/exec',
         dataSrc: json => json.data || json
       },
       columns: [
         { data: row => moment.utc(row['Date']).isValid() ? moment.utc(row['Date']).local().format('YYYY-MM-DD') : (row['Date'] || '-') },
         { data: row => moment.utc(row['Time']).isValid() ? moment.utc(row['Time']).local().format('HH:mm:ss') : (row['Time'] || '-') },
-        { data: row => row['Sensor Read'] || '-' },
         { data: row => row['Environment PM1.0 (µg/m³)'] ?? '-' },
         { data: row => row['Environment PM2.5 (µg/m³)'] ?? '-' },
         { data: row => row['Environment PM10 (µg/m³)'] ?? '-' },
@@ -195,7 +193,6 @@
             const twoLineHeaders = [
               'Date\n(YYYY-MM-DD)',
               ['Time', '(HH:mm:ss)'],
-              'Sensor Read',
               'PM1.0\n(µg/m³)',
               'PM2.5\n(µg/m³)',
               'PM10\n(µg/m³)',
