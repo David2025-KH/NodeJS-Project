@@ -34,9 +34,19 @@ app.get('/api/realtime', (req, res) => {
   res.json(cachedRealtimeData);
 });
 
-// Serve the UI from public/index.html
+// Serve cover page as the start page
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'cover.html'));
+});
+
+// Serve dashboard page explicitly if needed
+app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Optional: Redirect any unknown route to cover page
+app.get('*', (req, res) => {
+  res.redirect('/');
 });
 
 // Start the server
