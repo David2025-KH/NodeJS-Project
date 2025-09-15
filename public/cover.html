@@ -5,29 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Air Quality HMI Cover</title>
   <style>
-    body {
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+    /* Reset and body styling */
+    html, body {
       margin: 0;
-      height: 100vh;
+      padding: 0;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: #f4f4f4;
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      background: #f4f4f4;
-      font-family: 'Poppins', sans-serif;
     }
 
-    .cover-image {
+    .cover-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       width: 90%;
       max-width: 1200px;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Title styling */
+    .cover-title {
+      font-size: clamp(1.5rem, 3vw, 2.5rem); /* Scales with screen width */
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.2;
+      background: linear-gradient(90deg, #3498db, #2980b9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+    }
+
+    /* Cover image styling */
+    .cover-image {
+      width: 100%;
       height: auto;
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.3);
       margin-bottom: 30px;
     }
 
-    button {
-      padding: 14px 34px;
-      font-size: 1.2rem;
+    /* Button styling */
+    .enter-btn {
+      padding: 1rem 2.5rem;
+      font-size: clamp(1rem, 2vw, 1.2rem);
       font-weight: 600;
       color: white;
       background: linear-gradient(45deg, #3498db, #2980b9);
@@ -38,17 +65,35 @@
       transition: background 0.3s ease, transform 0.2s ease;
     }
 
-    button:hover {
+    .enter-btn:hover {
       background: linear-gradient(45deg, #2980b9, #1c5985);
       transform: scale(1.05);
+    }
+
+    /* Ensure mobile spacing */
+    @media (max-width: 600px) {
+      .cover-container {
+        padding: 15px;
+      }
+      .cover-title {
+        margin-bottom: 15px;
+      }
+      .enter-btn {
+        padding: 0.8rem 2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Cover image -->
-  <img src="cover.png" alt="Cover HMI" class="cover-image">
+  <div class="cover-container">
+    <!-- Title above the cover image -->
+    <h1 class="cover-title">Welcome to Indoor Air Quality Monitoring</h1>
 
-  <!-- Button to go to dashboard -->
-  <button onclick="location.href='index.html'">Enter Dashboard</button>
+    <!-- Cover image -->
+    <img src="cover.png" alt="Cover HMI" class="cover-image">
+
+    <!-- Button below -->
+    <button class="enter-btn" onclick="location.href='index.html'">Enter Dashboard</button>
+  </div>
 </body>
 </html>
