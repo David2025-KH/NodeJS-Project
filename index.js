@@ -2,25 +2,19 @@ const express = require('express');
 const admin = require('firebase-admin');
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 
-// Serve static files from 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Initialize Firebase Admin SDK
 let serviceAccount;
 
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-  // Use environment variable (Render)
   serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 } else {
-  // Local testing: use JSON file
-  serviceAccount = require('./serviceAccountKey.json');
+  serviceAccount = require('./serviceAccountKey.json'); // Local testing
 }
 
 admin.initializeApp({
@@ -29,7 +23,6 @@ admin.initializeApp({
 });
 
 const db = admin.database();
-
 let cachedRealtimeData = {};
 
 // Listen to Firebase path
@@ -52,6 +45,9 @@ app.get('/', (req, res) => {
 app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+// Serve static files (CSS, JS, images)
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Start server
 app.listen(port, () => {
