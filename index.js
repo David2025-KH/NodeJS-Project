@@ -6,9 +6,13 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+// ✅ Apply CORS middleware FIRST (before routes/static)
+app.use(cors({
+  origin: "https://david2025-kh.github.io"   // allow your GitHub Pages
+  // origin: "*"  // <-- use this instead if you want to allow all
+}));
 
-// Initialize Firebase Admin SDK
+// ================== Firebase Admin Init ==================
 let serviceAccount;
 
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
@@ -25,18 +29,18 @@ admin.initializeApp({
 const db = admin.database();
 let cachedRealtimeData = {};
 
-// Listen to Firebase path
+// ================== Firebase Listener ==================
 db.ref('/1_sensor_data').on('value', (snapshot) => {
   cachedRealtimeData = snapshot.val();
   console.log('✅ Firebase Realtime Data Updated:', cachedRealtimeData);
 });
 
-// API endpoint for frontend
+// ================== API Routes ==================
 app.get('/api/realtime', (req, res) => {
   res.json(cachedRealtimeData);
 });
 
-// Serve the cover page first
+// Cover page (root)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'cover.html'));
 });
@@ -46,10 +50,10 @@ app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Serve static files (CSS, JS, images)
+// ================== Static Files ==================
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Start server
+// ================== Start Server ==================
 app.listen(port, () => {
   console.log(`✅ Server started at http://localhost:${port}`);
 });
