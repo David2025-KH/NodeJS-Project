@@ -47,10 +47,12 @@ app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] })
 
 // ================== HTML Pages ==================
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'cover.html'));
+  // Dashboard page as main
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
 app.get('/index.html', (req, res) => {
+  // Cover/landing page
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
@@ -58,9 +60,9 @@ app.get('/historical.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'historical.html'));
 });
 
-// Fallback → cover.html
+// Fallback → dashboard.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'cover.html'));
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
 // ================== Start Server ==================
