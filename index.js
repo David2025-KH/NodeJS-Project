@@ -46,23 +46,25 @@ app.get('/api/realtime', (req, res) => {
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 
 // ================== HTML Pages ==================
-app.get('/', (req, res) => {
-  // Dashboard page as main
-  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
 
-app.get('/index.html', (req, res) => {
-  // Cover/landing page
+// Cover / Landing page as main
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Dashboard page
+app.get('/dashboard.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+// Historical data page
 app.get('/historical.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'historical.html'));
 });
 
-// Fallback → dashboard.html
+// Fallback → cover page
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ================== Start Server ==================
