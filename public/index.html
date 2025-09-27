@@ -1,105 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Air Quality Data</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Air Quality HMI Cover</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 
-    body {
-      font-family: 'Poppins', sans-serif;
+    /* Reset and body styling */
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
       background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .container {
-      background: #fff;
-      padding: 20px 15px;
-      max-width: 900px;
-      margin: 20px auto;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      font-size: 2.2rem;
-      text-align: center;
-      background: linear-gradient(90deg, #3498db, #2980b9);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.15));
-      margin-bottom: 10px;
-    }
-
-    #timestamp {
-      text-align: center;
-      font-style: italic;
-      color: #555;
-      margin-bottom: 20px;
-    }
-
-    #error-msg {
-      color: red;
-      font-style: italic;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 15px;
-    }
-
-    .data-card {
-      position: relative;
-      background: #fdfdfd;
-      border-radius: 20px;
-      padding: 15px 15px 15px 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      text-align: center;
+    .cover-container {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      border: 4px solid transparent;
-      transition: border-color 0.3s ease;
+      align-items: center;
+      width: 90%;
+      max-width: 1200px;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
-    .data-card.double {
-      grid-column: span 2;
-    }
-
-    .data-name {
-      font-size: 1rem;
-      color: #555;
-    }
-
-    .data-value {
-      font-size: 1.8rem;
-      font-weight: bold;
-      margin: 5px 0;
-      color: #111111;
-    }
-
-    .data-unit-small {
-      font-size: 0.9rem;
-      margin-left: 4px;
-      color: #555555;
-    }
-
-    .data-comment {
-      font-size: 1rem;
-      margin-top: 4px;
+    /* Title styling */
+    .cover-title {
+      font-size: clamp(1.5rem, 3vw, 2.5rem); /* Scales with screen width */
       font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.2;
+      background: linear-gradient(90deg, #3498db, #2980b9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
     }
 
-    button {
-      display: block;
-      margin: 30px auto 0;
-      padding: 14px 34px;
-      font-size: 1.1rem;
+    /* Cover image styling */
+    .cover-image {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      margin-bottom: 30px;
+    }
+
+    /* Button styling */
+    .enter-btn {
+      padding: 1rem 2.5rem;
+      font-size: clamp(1rem, 2vw, 1.2rem);
       font-weight: 600;
       color: white;
       background: linear-gradient(45deg, #3498db, #2980b9);
@@ -110,212 +65,35 @@
       transition: background 0.3s ease, transform 0.2s ease;
     }
 
-    button:hover {
+    .enter-btn:hover {
       background: linear-gradient(45deg, #2980b9, #1c5985);
       transform: scale(1.05);
     }
 
-    @media (max-width: 480px) {
-      .container {
-        padding: 15px 10px;
-        max-width: 100%;
-        margin: 10px auto;
+    /* Ensure mobile spacing */
+    @media (max-width: 600px) {
+      .cover-container {
+        padding: 15px;
+      }
+      .cover-title {
+        margin-bottom: 15px;
+      }
+      .enter-btn {
+        padding: 0.8rem 2rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Real-time Indoor Air Quality Data</h1>
-    <div id="timestamp">Loading timestamp...</div>
-    <div id="error-msg"></div>
-    <div class="card-grid" id="data-grid">
-      <div style="grid-column: 1 / -1; text-align: center;">Loading data...</div>
-    </div>
-    <button onclick="location.href='historical.html'">មើល Historical Indoor Air Quality Data</button>
-    <button onclick="location.href='cover.html'">ត្រឡប់ទៅទំព័រដើមវិញ</button>
+  <div class="cover-container">
+    <!-- Title above the cover image -->
+    <h1 class="cover-title">Welcome to Indoor Air Quality Monitoring</h1>
+
+    <!-- Cover image -->
+    <img src="cover.png" alt="Cover HMI" class="cover-image">
+
+    <!-- Button below -->
+    <button class="enter-btn" onclick="location.href='dashboard.html'">ចុចចូលមើល Dashboard</button>
   </div>
-
-  <script>
-    const parameterSymbols = {
-      CO2: "🫧️️",
-      Oxygen: "🫁",
-      PM10_env: "🏜️",
-      PM1_0_env: "🟤",
-      PM2_5_env: "🌁",
-      AQI_PM2_5: "📊",
-      Pressure: "💨",
-      VOC: "🧪",
-      Temperature: "🌡️",
-      Humidity: "💧"
-    };
-
-    const parameterNames = {
-      CO2: "CO₂",
-      Oxygen: "O₂",
-      PM10_env: "PM10",
-      PM1_0_env: "PM1",
-      PM2_5_env: "PM2.5",
-      AQI_PM2_5: "AQI PM2.5",
-      Pressure: "Air Pressure",   // ✅ changed
-      VOC: "VOC",
-      Temperature: "Temperature",
-      Humidity: "Humidity"
-    };
-
-    const units = {
-      CO2: "ppm",
-      Oxygen: "%",
-      PM10_env: "µg/m³",
-      PM1_0_env: "µg/m³",
-      PM2_5_env: "µg/m³",
-      AQI_PM2_5: "AQI",
-      Pressure: "hPa",            // ✅ changed
-      VOC: "index",
-      Temperature: "°C",
-      Humidity: "%RH"
-    };
-
-    function getCommentAndColor(key, value) {
-      const pmLimits = {
-        PM1_0_env: [20, 40, 80, 120, 200],
-        PM2_5_env: [25, 50, 100, 150, 250],
-        PM10_env: [50, 100, 200, 300, 400]
-      };
-      const comments = ["Excellent 🥰", "Good 😊", "Moderate 😐", "Unhealthy 😷", "Very Unhealthy 🥵", "Hazardous ☠️"];
-      const colors = ["#0000FF", "#00B050", "#B8860B", "#FF0000", "#800080", "#7E0023"];
-
-      switch (key) {
-        case "Temperature":
-          if (value < 18) return { comment: "Too cold ❄️", color: "#0000FF" };
-          if (value <= 24) return { comment: "Comfortable 😊", color: "#008000" };
-          if (value <= 30) return { comment: "Warm ☀️", color: "#B8860B" };
-          return { comment: "Too hot 🔥", color: "#FF0000" };
-        case "Humidity":
-          if (value < 30) return { comment: "Too dry 😰", color: "#B8860B" };
-          if (value <= 60) return { comment: "Comfortable 😊", color: "#008000" };
-          return { comment: "Too humid 🥵", color: "#FF0000" };
-        case "Pressure":  // ✅ still works, but now expects hPa values
-          if (value < 980) return { comment: "Low pressure ⛈️", color: "#0000FF" };
-          if (value <= 1030) return { comment: "Normal 🌤️", color: "#008000" };
-          return { comment: "High pressure ☀️", color: "#B8860B" };
-        case "CO2":
-          if (value <= 600) return { comment: "Fresh air 🌿", color: "#0000FF" };
-          if (value <= 1000) return { comment: "Normal 🏠", color: "#008000" };
-          if (value <= 2000) return { comment: "Moderate 😐", color: "#B8860B" };
-          if (value <= 5000) return { comment: "Poor 😷", color: "#B8860B" };
-          return { comment: "Unhealthy ☠️", color: "#FF0000" };
-        case "Oxygen":
-          if (value > 20.8) return { comment: "Good 😊", color: "#0000FF" };
-          if (value > 19.5) return { comment: "Acceptable 🙂", color: "#008000" };
-          if (value > 18.0) return { comment: "Low ⚠️", color: "#B8860B" };
-          return { comment: "Very low ☠️", color: "#FF0000" };
-        case "PM1_0_env":
-        case "PM2_5_env":
-        case "PM10_env":
-          const limits = pmLimits[key];
-          for (let i = 0; i < limits.length; i++) {
-            if (value <= limits[i]) return { comment: comments[i], color: colors[i] };
-          }
-          return { comment: comments[5], color: colors[5] };
-        case "AQI_PM2_5":
-          if (value <= 50) return { comment: comments[0], color: colors[0] };
-          if (value <= 100) return { comment: comments[1], color: colors[1] };
-          if (value <= 150) return { comment: comments[2], color: colors[2] };
-          if (value <= 200) return { comment: comments[3], color: colors[3] };
-          if (value <= 300) return { comment: comments[4], color: colors[4] };
-          return { comment: comments[5], color: colors[5] };
-        case "VOC":
-          if (value <= 50) return { comment: comments[0], color: colors[0] };
-          if (value <= 100) return { comment: comments[1], color: colors[1] };
-          if (value <= 150) return { comment: comments[2], color: colors[2] };
-          if (value <= 200) return { comment: comments[3], color: colors[3] };
-          if (value <= 300) return { comment: comments[4], color: colors[4] };
-          return { comment: comments[5], color: colors[5] };
-      }
-      return { comment: "", color: "#000000" };
-    }
-
-    function formatTimestamp(ts) {
-      const date = new Date(ts);
-      return isNaN(date) ? ts : date.toLocaleString();
-    }
-
-    async function fetchData() {
-      const grid = document.getElementById('data-grid');
-      const errorDiv = document.getElementById('error-msg');
-      const timestampDiv = document.getElementById('timestamp');
-
-      try {
-        const response = await fetch('https://air-quality-dashboard-4op1.onrender.com/api/realtime');
-        if (!response.ok) throw new Error('Network error');
-        const data = await response.json();
-
-        errorDiv.textContent = '';
-        timestampDiv.textContent = "Last Update: " + formatTimestamp(data.Timestamp);
-        grid.innerHTML = '';
-
-        if ("PM2_5_env" in data && "AQI_PM2_5" in data) {
-          const pm25Val = data["PM2_5_env"];
-          const aqiVal = data["AQI_PM2_5"];
-          const pm25 = getCommentAndColor("PM2_5_env", pm25Val);
-          const aqi = getCommentAndColor("AQI_PM2_5", aqiVal);
-
-          grid.insertAdjacentHTML("beforeend", `
-            <div class="data-card double" style="border-color: ${pm25.color};">
-              <div class="data-name">${parameterNames["PM2_5_env"]} ${parameterSymbols["PM2_5_env"]}</div>
-              <div class="data-value">
-                ${pm25Val}<span class="data-unit-small">${units["PM2_5_env"]}</span>
-              </div>
-              <div class="data-comment" style="color:${pm25.color}">${pm25.comment}</div>
-
-              <div class="data-name" style="margin-top:10px;">${parameterNames["AQI_PM2_5"]} ${parameterSymbols["AQI_PM2_5"]}</div>
-              <div class="data-value">
-                ${aqiVal}<span class="data-unit-small">${units["AQI_PM2_5"]}</span>
-              </div>
-              <div class="data-comment" style="color:${aqi.color}">${aqi.comment}</div>
-            </div>
-          `);
-        }
-
-        const displayOrder = [
-          "PM1_0_env", "PM10_env", "Oxygen", "CO2",
-          "Temperature", "Humidity", "Pressure", "VOC"
-        ];
-
-        for (const key of displayOrder) {
-          if (!(key in data)) continue;
-
-          const value = data[key];
-          const paramName = parameterNames[key] || key;
-          const symbol = parameterSymbols[key] || '';
-          const unit = units[key] || '';
-          const valFixed = ["Oxygen", "Humidity", "Temperature"].includes(key)
-            ? Number(value).toFixed(2)
-            : value;
-
-          const { comment, color } = getCommentAndColor(key, value);
-
-          grid.insertAdjacentHTML("beforeend", `
-            <div class="data-card" style="border-color: ${color};">
-              <div class="data-name">${paramName} ${symbol}</div>
-              <div class="data-value">
-                ${valFixed}<span class="data-unit-small">${unit}</span>
-              </div>
-              <div class="data-comment" style="color: ${color}">${comment}</div>
-            </div>
-          `);
-        }
-      } catch (error) {
-        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; color:red;">Error loading data</div>`;
-        errorDiv.textContent = error.message;
-        timestampDiv.textContent = "";
-        console.error('Error fetching data:', error);
-      }
-    }
-
-    fetchData();
-    setInterval(fetchData, 2000);
-  </script>
 </body>
 </html>
