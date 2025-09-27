@@ -2,7 +2,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "firebase-admin": "^13.4.0",
+    "firebase-admin": "^13.5.0",
     "form-data": "^2.5.5"
   },
   "name": "node.js-project",
@@ -14,5 +14,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/David2025-KH/NodeJS-Project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/David2025-KH/NodeJS-Project/issues"
+  },
+  "homepage": "https://github.com/David2025-KH/NodeJS-Project#readme",
   "description": ""
 }

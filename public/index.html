@@ -23,15 +23,15 @@
     }
 
     h1 {
-    font-size: 2.2rem;
-    text-align: center;
-    background: linear-gradient(90deg, #3498db, #2980b9);
-    background-clip: text;          /* standard property */
-    -webkit-background-clip: text;  /* WebKit fallback */
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.15));
-    margin-bottom: 10px;
-  }
+      font-size: 2.2rem;
+      text-align: center;
+      background: linear-gradient(90deg, #3498db, #2980b9);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.15));
+      margin-bottom: 10px;
+    }
 
     #timestamp {
       text-align: center;
@@ -63,7 +63,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      border: 4px solid transparent; /* full thick colored border */
+      border: 4px solid transparent;
       transition: border-color 0.3s ease;
     }
 
@@ -114,15 +114,14 @@
       background: linear-gradient(45deg, #2980b9, #1c5985);
       transform: scale(1.05);
     }
-	
-	/* Small screens adjustment to prevent horizontal scroll */
-@media (max-width: 480px) {
-  .container {
-    padding: 15px 10px;
-    max-width: 100%;
-    margin: 10px auto;
-  }
-}
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px 10px;
+        max-width: 100%;
+        margin: 10px auto;
+      }
+    }
   </style>
 </head>
 <body>
@@ -134,7 +133,7 @@
       <div style="grid-column: 1 / -1; text-align: center;">Loading data...</div>
     </div>
     <button onclick="location.href='historical.html'">មើល Historical Indoor Air Quality Data</button>
-	<button onclick="location.href='cover.html'">ត្រឡប់ទៅទំព័រដើមវិញ</button>
+    <button onclick="location.href='cover.html'">ត្រឡប់ទៅទំព័រដើមវិញ</button>
   </div>
 
   <script>
@@ -158,7 +157,7 @@
       PM1_0_env: "PM1",
       PM2_5_env: "PM2.5",
       AQI_PM2_5: "AQI PM2.5",
-      Pressure: "Pressure",
+      Pressure: "Air Pressure",   // ✅ changed
       VOC: "VOC",
       Temperature: "Temperature",
       Humidity: "Humidity"
@@ -171,7 +170,7 @@
       PM1_0_env: "µg/m³",
       PM2_5_env: "µg/m³",
       AQI_PM2_5: "AQI",
-      Pressure: "Pa",
+      Pressure: "hPa",            // ✅ changed
       VOC: "index",
       Temperature: "°C",
       Humidity: "%RH"
@@ -196,9 +195,9 @@
           if (value < 30) return { comment: "Too dry 😰", color: "#B8860B" };
           if (value <= 60) return { comment: "Comfortable 😊", color: "#008000" };
           return { comment: "Too humid 🥵", color: "#FF0000" };
-        case "Pressure":
-          if (value < 98000) return { comment: "Low pressure ⛈️", color: "#0000FF" };
-          if (value <= 103000) return { comment: "Normal 🌤️", color: "#008000" };
+        case "Pressure":  // ✅ still works, but now expects hPa values
+          if (value < 980) return { comment: "Low pressure ⛈️", color: "#0000FF" };
+          if (value <= 1030) return { comment: "Normal 🌤️", color: "#008000" };
           return { comment: "High pressure ☀️", color: "#B8860B" };
         case "CO2":
           if (value <= 600) return { comment: "Fresh air 🌿", color: "#0000FF" };
@@ -256,7 +255,6 @@
         timestampDiv.textContent = "Last Update: " + formatTimestamp(data.Timestamp);
         grid.innerHTML = '';
 
-        // Combined PM2.5 and AQI PM2.5 double card
         if ("PM2_5_env" in data && "AQI_PM2_5" in data) {
           const pm25Val = data["PM2_5_env"];
           const aqiVal = data["AQI_PM2_5"];
