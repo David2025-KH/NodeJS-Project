@@ -1,31 +1,26 @@
-// ================== Imports ==================
 const express = require('express');
 const admin = require('firebase-admin');
 const cors = require('cors');
 const path = require('path');
 
-// ================== App Setup ==================
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ✅ Apply CORS middleware FIRST (before routes/static)
+// ================== CORS ==================
 app.use(cors({
   origin: [
-    "http://localhost:3000",      // local dev
-    "http://127.0.0.1:5500",      // VSCode Live Server
-    "https://david2025-kh.github.io" // GitHub Pages frontend
-  ],
-  methods: ["GET"],
-  allowedHeaders: ["Content-Type"]
+    "http://localhost:3000",
+    "http://127.0.0.1:5500",
+    "https://david2025-kh.github.io"
+  ]
 }));
 
 // ================== Firebase Init ==================
 let serviceAccount;
-
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 } else {
-  serviceAccount = require('./serviceAccountKey.json'); // local dev
+  serviceAccount = require('./serviceAccountKey.json');
 }
 
 admin.initializeApp({
@@ -42,11 +37,15 @@ db.ref('/1_sensor_data').on('value', (snapshot) => {
   console.log('✅ Firebase Realtime Data Updated:', cachedRealtimeData);
 });
 
-// ================== API Routes ==================
+// ================== API Route ==================
 app.get('/api/realtime', (req, res) => {
   res.json(cachedRealtimeData);
 });
 
+// ================== Static Files ==================
+app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
+
+// ================== HTML Pages ==================
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'cover.html'));
 });
@@ -55,8 +54,14 @@ app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ================== Static Files ==================
-app.use(express.static(path.join(__dirname, 'public')));
+app.get('/historical.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'historical.html'));
+});
+
+// Fallback → cover.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'cover.html'));
+});
 
 // ================== Start Server ==================
 app.listen(port, () => {
